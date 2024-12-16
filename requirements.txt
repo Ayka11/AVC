@@ -1,0 +1,12 @@
+flask
+librosa
+matplotlib
+numpy
+python-docx
+pypdf2
+pdfplumber
+sounddevice
+pydub
+dash
+pandas
+plotly
