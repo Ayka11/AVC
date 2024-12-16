@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Code to Text</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center">Convert Color Code to Text</h1>
+        <form method="POST">
+            <div class="form-group">
+                <label for="colorCode">Color Code:</label>
+                <textarea id="colorCode" name="color_code" class="form-control" rows="5">{{ color_code if color_code else '' }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Convert to Text</button>
+        </form>
+        {% if original_text %}
+        <div class="mt-5">
+            <h2>Original Text</h2>
+            <p>{{ original_text }}</p>
+        </div>
+        {% endif %}
+        {% if error %}
+        <div class="alert alert-danger mt-5" role="alert">
+            {{ error }}
+        </div>
+        {% endif %}
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
