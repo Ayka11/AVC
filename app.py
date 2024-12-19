@@ -61,6 +61,75 @@ freqs_org = [27.50, 29.14, 30.87, 32.70, 34.65, 36.71, 38.89, 41.20, 43.65, 46.2
 
 # Set colors for each frequency
 colors = [[139/255, 0, 0]] * len(freqs_org)
+sounds = {				
+'A': (0, 100, 0),  # Dark Green+I1:I31
+'B': (255, 127, 80), # Coral
+'C': (210, 180, 140),   # Light Brown
+'Ç': (205, 170, 100), # Light golden brown
+'D': (255, 165, 0), # Orange
+'E': (0, 255, 255), # Light Blue
+'Ə': (230, 230, 250), # Lavender
+'F': (139, 0, 139), # Dark Magenta
+'G': (255, 215, 0), # Gold
+'Ğ':  (184, 134, 11),  # Golden brown
+'H': (128, 128, 0), # Olive
+'X':  (50, 60, 30),   # Dark brown green
+'I': (100, 200, 200), # light sea wave
+'İ': (46, 139, 87),  # Sea Wave
+'J': (221, 160, 221),  # Plum
+'K': (255, 0, 255), # Magenta
+'Q': (153, 50, 204),  # Dark blue magenta
+'L': (0, 0, 255),   # Blue
+'M': (255, 0, 0), # Red
+'N': (255, 255, 0), # Yellow
+'O': (50, 205, 50), # Lime
+'Ö': (50, 70, 0), # Dark lime
+'P': (255, 255, 224), # Light Yellow
+'R':(255, 250, 205), # Lemon
+'S': (255, 182, 193),  # Light Pink
+'Ş': (210, 105, 30), # Chocolate
+'T': (189, 252, 201),  # Mint
+'U': (64, 224, 208), # Turquoise
+'Ü': (0, 255, 0), # Green ŋ
+'V': (250, 128, 114), # Salmon
+'Y': (35, 70, 70),   # Dark green blue
+'a': (0, 100, 0),  # Dark Green
+'b': (255, 127, 80), # Coral
+'c': (210, 180, 140),   # Light Brown
+'d': (255, 165, 0), # Orange
+'e': (0, 255, 255), # Light Blue
+'f': (139, 0, 139), # Dark Magenta
+'g': (255, 215, 0), # Gold
+'h': (128, 128, 0), # Olive
+'i': (46, 139, 87),  # Sea Wave
+'j': (250, 128, 114),   # Salmon
+'k': (255, 0, 255), # Magenta
+'l': (0, 0, 255),   # Blue
+'m': (255, 0, 0), # Red
+'n': (255, 255, 0), # Yellow
+'o': (50, 205, 50), # Lime
+'p': (139, 0, 0), # Dark Red
+'q': (153, 50, 204),   # Dark blue magenta
+'r': (255, 250, 205), # Lemon
+'s': (255, 182, 193),  # Light Pink
+'t': (0, 0, 139),  # Dark Blue
+'u': (64, 224, 208), # Turquoise
+'v': (255, 192, 203), # Pink
+'w': (255, 255, 224), # Light Yellow
+'x': (50, 60, 30),   # Dark brown green
+'y': (35, 70, 70),   # Dark green blue
+'z': (165, 42, 42), # Brown
+'th': (189, 252, 201),  # Mint
+'sh': (210, 105, 30), # Chocolate
+'ing': (0, 255, 0), # Green ŋ
+'isi': (250, 128, 114), # Salmon
+'æ': (230, 230, 250),  # Lavender
+    "ʒ":  (250, 128, 114),  # Salmon
+    "ʃ": (210, 105, 30),  # Chocolate
+    "z": (165, 42, 42),  # Brown
+    "θ": (255, 140, 0)  # Dark Orange
+    
+}
 
 def read_docx(file):
     doc = Document(file)
@@ -90,7 +159,7 @@ def split_image_into_chunks(image, chunk_size):
 def generate_color_palette():
     chars = string.digits + string.ascii_lowercase + string.ascii_uppercase + '!?., '
     palette = {}
-    
+    '''
     num_colors = len(chars)
     for i, char in enumerate(chars):
         hue = i**2 / num_colors   
@@ -99,9 +168,16 @@ def generate_color_palette():
         rgb = colorsys.hls_to_rgb(hue, lightness, saturation)
         rgb = tuple(int(255 * x) for x in rgb)
         palette[char] = rgb
+    '''
     palette['A']  = (200,200,200)
     palette['b'] = (165,0,165)
     palette['c'] = (100,200,255)
+    
+    for s in sounds:
+        p=sounds[s]
+        palette[p]=s
+    
+    print('pppp',palette)
     return palette
 
 def char_to_color(char, palette):
@@ -258,6 +334,7 @@ def color_to_text():
     return render_template('color_to_text.html')
 
 colors = plt.cm.Set1(np.linspace(0, 1, len(freqs_org)))  # Choose your preferred colormap
+
 
 
 frequency_colors_update = {
