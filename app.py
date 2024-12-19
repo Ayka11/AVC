@@ -175,7 +175,7 @@ def generate_color_palette():
     
     for s in sounds:
         p=sounds[s]
-        palette[p]=s
+        palette[s]=p
     
     print('pppp',palette)
     return palette
@@ -315,7 +315,7 @@ def color_to_text():
     if request.method == 'POST':
         if 'color_code' in request.form and request.form['color_code']:
             color_code_input = request.form['color_code']
-            print(color_code_input.strip())
+            print('strip',color_code_input.strip())
             color_code = color_code_input.strip().strip('][').split('),')
             cz = []
             for x in color_code:
