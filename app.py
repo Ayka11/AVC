@@ -191,7 +191,14 @@ def color_to_char(color, palette):
 
 def string_to_color_pattern(input_string, palette, cell_width=200, cell_height=200):
     length = len(input_string)
-    width = length * cell_width
+    width=0
+    for t in input_string:
+        if t.islower():
+            width+=length * cell_width
+        else:
+            width+=int(length * cell_width*1.5)
+        
+    #width = length * cell_width
     height = cell_height + cell_height // 2  
     image = Image.new("RGB", (width, height), (255, 255, 255))  
     draw = ImageDraw.Draw(image)
@@ -199,15 +206,29 @@ def string_to_color_pattern(input_string, palette, cell_width=200, cell_height=2
 
     color_code = []
     for i, char in enumerate(input_string):
-        color = char_to_color(char, palette)
-        color_code.append(color)
-        top_left = (i * cell_width, 0)
-        bottom_right = ((i + 1) * cell_width, cell_height)
-        draw.rectangle([top_left, bottom_right], fill=color)
-        text_width, text_height = 20,20
-        text_x = top_left[0] + (cell_width - text_width) / 2
-        text_y = cell_height + (cell_height // 2 - text_height) / 2
-        draw.text((text_x, text_y), char, fill=(0, 0, 0), font=font, stroke_width=1)
+        if char.islower():
+            color = char_to_color(char, palette)
+            color_code.append(color)
+            top_left = (i * cell_width, 0)
+            bottom_right = ((i + 1) * cell_width, cell_height)
+            draw.rectangle([top_left, bottom_right], fill=color)
+            text_width, text_height = 20,20
+            text_x = top_left[0] + (cell_width - text_width) / 2
+            text_y = cell_height + (cell_height // 2 - text_height) / 2
+            font = ImageFont.load_default(size=50)
+            draw.text((text_x, text_y), char, fill=(0, 0, 0), font=font, stroke_width=1)
+        else:
+            color = char_to_color(char, palette)
+            color_code.append(color)
+            top_left = (i * cell_width, 0)
+            bottom_right = ((i + 1) * cell_width*1.5, cell_height)
+            draw.rectangle([top_left, bottom_right], fill=color)
+            text_width, text_height = 50,30
+            text_x = top_left[0] + (cell_width*1.1 - text_width) / 2
+            text_y = cell_height + (cell_height // 2 - text_height) / 2 - 20
+            font = ImageFont.load_default(size=65)
+            draw.text((text_x, text_y), char, fill=(0, 0, 0), font=font, stroke_width=3)
+            
     
     return image, color_code
 
@@ -302,6 +323,7 @@ def text_to_color():
             return render_template('text_to_color.html', error="No input provided")
         
         palette = generate_color_palette()
+        
         image, color_code = string_to_color_pattern(input_string, palette)
         
         image_chunks = split_image_into_chunks(image, chunk_size=200)  
