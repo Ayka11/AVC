@@ -258,8 +258,8 @@ def upload_audio():
             print("Audio has more than one channel. Using the first channel.")
             y = y[:, 0]  # Select the first channel
     
-        #if len(y)>Fs*1.0*60:
-        #    y=y[:int(Fs*1.0*60)]
+        if len(y)>Fs*2.0*60:
+            y=y[:int(Fs*2.0*60)]
         
         D = np.abs(librosa.stft(y))
         D_db = librosa.amplitude_to_db(D, ref=np.max)
