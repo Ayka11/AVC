@@ -123,11 +123,25 @@ sounds = {
 'sh': (210, 105, 30), # Chocolate
 'ing': (0, 255, 0), # Green ŋ
 'isi': (250, 128, 114), # Salmon
+'ʌ': (65, 105, 225),  # Royal Blue
 'æ': (230, 230, 250),  # Lavender
+ 'æ': (230, 230, 250),
+'Ə' :(230, 230, 250),
+'Ğ':(184, 134, 11),  # Golden brown
+'ğ':  (184, 134, 11),  # Golden brown
+'ə': (230, 230, 250),
+'Ş':(210, 105, 30), # Chocolate
+'ş': (210, 105, 30), # Chocolate
     "ʒ":  (250, 128, 114),  # Salmon
     "ʃ": (210, 105, 30),  # Chocolate
     "z": (165, 42, 42),  # Brown
-    "θ": (255, 140, 0)  # Dark Orange
+    "θ": (255, 140, 0),  # Dark Orange
+   'Ü':(0, 255, 0), # Green ŋ
+   'ü': (0, 255, 0), # Green ŋ
+'Ö':(50, 70, 0), # Dark lime
+'ö': (50, 70, 0), # Dark lime
+'Ç': (205, 170, 100), # Light golden brown
+'ç': (205, 170, 100) # Light golden brown
     
 }
 
