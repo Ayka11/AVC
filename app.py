@@ -121,7 +121,7 @@ sounds = {
 'z': (165, 42, 42), # Brown
 'th': (189, 252, 201),  # Mint
 'sh': (210, 105, 30), # Chocolate
-'ing': (0, 255, 0), # Green ŋ
+'ing': (0, 255, 0), #Green ŋ
 'isi': (250, 128, 114), # Salmon
 'ʌ': (65, 105, 225),  # Royal Blue
 'æ': (230, 230, 250),  # Lavender
