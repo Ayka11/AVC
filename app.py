@@ -33,7 +33,7 @@ import plotly.graph_objs as go
 import plotly.express as px
 global session
 app = Flask(__name__)
-app.secret_key = 'lantop'  # Set a secret key sessio
+app.secret_key = 'lantop'  # Set a secret key session
 
 # Initialize Dash app
 dash_app = Dash(__name__, server=app, url_base_pathname='/dash/')
