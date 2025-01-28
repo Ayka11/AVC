@@ -340,7 +340,7 @@ def text_to_color():
         
         image, color_code = string_to_color_pattern(input_string, palette)
         
-        image_chunks = split_image_into_chunks(image, chunk_size=200)  
+        image_chunks = split_image_into_chunks(image, chunk_size=len(input_string))  
 
         return render_template('text_to_color_representation.html', image_chunks=image_chunks, color_code=color_code)
 
