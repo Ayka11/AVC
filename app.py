@@ -203,7 +203,7 @@ def color_to_char(color, palette):
             return char
     return '?'
 
-def string_to_color_pattern(input_string, palette, cell_width=20, cell_height=20):
+def string_to_color_pattern(input_string, palette, cell_width=100, cell_height=100):
     length = len(input_string)
     width=0
     for t in input_string:
