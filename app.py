@@ -208,7 +208,7 @@ def string_to_color_pattern(input_string, palette, cell_width=200, cell_height=2
     width=0
     for t in input_string:
         if t.islower():
-            width+=length * cell_width
+            width+=cell_width
         else:
             width+=int(length * cell_width*1.5)
         
