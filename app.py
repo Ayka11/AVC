@@ -313,8 +313,8 @@ def upload_audio():
         df=pd.DataFrame(frequency_data)
         df.to_csv('freq.csv',index=0)
         
-
-        return render_template('color_representation.html', plot_url=plot_url)
+        # plot_url=plot_url
+        return render_template('color_representation.html')
 
 @app.route('/text-to-color', methods=['GET', 'POST'])
 def text_to_color():
