@@ -633,5 +633,5 @@ def load_frequency_data(_):
     return frequency_data  # Return the data to the Store
 
 if __name__ == '__main__':
-     app.run(debug=True)
+     app.run(debug=True,host="0.0.0.0", port=8000)
 
