@@ -612,7 +612,7 @@ def update_bar_chart(frequency_data):
     fig.update_layout(title='Frequency vs Amplitude',
                       xaxis_title='Frequency',
                       yaxis_title='Amplitude')   # Set y-axis limits)
-
+    print(fig)
     return fig
 
 
