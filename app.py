@@ -563,56 +563,48 @@ def upload_file():
     [Input('frequency-data', 'data')]
 )
 
+@dash_app.callback(
+    Output('bar-chart', 'figure'),
+    [Input('frequency-data', 'data')]
+)
 def update_bar_chart(frequency_data):
-    #if frequency_data is None:
-    #        return go.Figure()  # Return empty figure if no data
+    if not frequency_data:
+        return go.Figure()  # Return empty figure if no data
 
-    freqq=pd.read_csv('freq.csv')
-                
-    frequency_data=freqq
-    frequencies = list(frequency_data['frequencies'])
-    amplitudes = list(frequency_data['amplitudes'])
+    # Convert received data into a DataFrame
+    df = pd.DataFrame(frequency_data)
+
+    frequencies = list(df['frequencies'])
+    amplitudes = list(df['amplitudes'])
 
     fig = go.Figure(data=[
         go.Bar(
             x=frequencies,
             y=amplitudes,
-            marker_color='rgba(0, 100, 200, 0.6)'  # Example color
+            marker_color='rgba(0, 100, 200, 0.6)' 
         )
     ])
-    df = pd.DataFrame({'Frequency': frequencies, 'Amplitude': amplitudes})
 
-    # Create a list to hold the box traces
-    box_traces = []   
-
-
+    box_traces = []
     for note in frequency_colors_update:
-        
-        # Define the frequency range for the note
-        print('here',frequency_colors_update[note])
-        lower_bound = frequency_colors_update[note]["range"][0]
-        upper_bound = frequency_colors_update[note]["range"][1]
-        
-        # Filter amplitudes for frequencies within the defined range
-        freq_data = df[(df['Frequency'] > lower_bound) & 
-                                   (df['Frequency'] < upper_bound)]
-        xx=freq_data.index
-        
-        #print(rgba_colors[i])
+        lower_bound, upper_bound = frequency_colors_update[note]["range"]
+        freq_data = df[(df['Frequency'] > lower_bound) & (df['Frequency'] < upper_bound)]
+
         if not freq_data.empty:
             box_traces.append(go.Box(
-                y=freq_data['Amplitude'],  # Amplitudes on Y-axis
-                name=note,  # Name the box with the note name
-                marker_color='rgba(' + str(frequency_colors_update[note]["color"])[1:-1] + ',0.6)'   # Cycle through colors
+                y=freq_data['Amplitude'],  
+                name=note,
+                marker_color=f'rgba({",".join(map(str, frequency_colors_update[note]["color"]))}, 0.6)'
             ))
-        
-    frange = np.arange(0,int(max(frequencies)),500)
-    # Create the figure with all box traces
-    fig = go.Figure(data=box_traces)
-    fig.update_layout(title='Frequency vs Amplitude',
-                      xaxis_title='Frequency',
-                      yaxis_title='Amplitude')   # Set y-axis limits)
-    print(fig)
+
+    fig.add_traces(box_traces)
+
+    fig.update_layout(
+        title='Frequency vs Amplitude',
+        xaxis_title='Frequency',
+        yaxis_title='Amplitude'
+    )
+
     return fig
 
 
