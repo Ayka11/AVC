@@ -33,7 +33,7 @@ import plotly.graph_objs as go
 import plotly.express as px
 global session
 app = Flask(__name__)
-app.secret_key = 'lantop'  # Set a secret key session
+app.secret_key = 'Lantop2333'  # Set a secret key session
 
 # Initialize Dash app
 dash_app = Dash(__name__, server=app, url_base_pathname='/dash/')
@@ -563,9 +563,9 @@ def upload_file():
     [Input('frequency-data', 'data')]
 )
 
-def update_bar_chart(frequency_data):
-    if frequency_data is None:
-        return go.Figure()  # Return empty figure if no data
+def update_bar_chart():
+    #if frequency_data is None:
+    #        return go.Figure()  # Return empty figure if no data
 
     freqq=pd.read_csv('freq.csv')
                 
@@ -619,7 +619,7 @@ def update_bar_chart(frequency_data):
 # Layout for Dash app
 dash_app.layout = html.Div([
     dcc.Store(id='frequency-data', data={}),  # To store frequency data
-    dcc.Graph(id='bar-chart',figure=update_bar_chart(None)),
+    dcc.Graph(id='bar-chart',figure=update_bar_chart()),
     html.Div(id='graph-container', style={'display': 'none'})  # Hidden div for handling updates
 ])
 
