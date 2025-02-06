@@ -609,10 +609,20 @@ def update_bar_chart(frequency_data):
 
 
 # Layout for Dash app
+df = px.data.gapminder()
+
 dash_app.layout = html.Div([
-    dcc.Store(id='frequency-data', data={}),  # To store frequency data
-    dcc.Graph(id='bar-chart',figure=update_bar_chart(None)),
-    html.Div(id='graph-container', style={'display': 'none'})  # Hidden div for handling updates
+    dcc.Dropdown(
+        id='year-dropdown',
+        options=[{'label': year, 'value': year} for year in df['year'].unique()],
+        value=2007,
+        clearable=False,
+        style={'width': '50%'}
+    ),
+    dcc.Graph(id='bar-chart')
+    #dcc.Store(id='frequency-data', data={}),  # To store frequency data
+    #dcc.Graph(id='bar-chart',figure=update_bar_chart(None)),
+    #html.Div(id='graph-container', style={'display': 'none'})  # Hidden div for handling updates
 ])
 
 # Callback to load frequency data from session when a request is made
