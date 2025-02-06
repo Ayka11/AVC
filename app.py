@@ -572,6 +572,12 @@ def update_bar_chart(frequency_data):
     if not frequency_data:
         return go.Figure()  # Return empty figure if no data
 
+    freqq=pd.read_csv('freq.csv')
+                
+    frequency_data=freqq
+    frequencies = list(frequency_data['frequencies'])
+    amplitudes = list(frequency_data['amplitudes'])
+         
     # Convert received data into a DataFrame
     df = pd.DataFrame(frequency_data)
 
@@ -612,12 +618,20 @@ def update_bar_chart(frequency_data):
 # Layout for Dash app
 df = px.data.gapminder()
 fig = px.bar(df[df["year"] == 2007], x="continent", y="pop", title="Population by Continent")
+freqq=pd.read_csv('freq.csv')
+                
+frequency_data=freqq
+frequencies = list(frequency_data['frequencies'])
+amplitudes = list(frequency_data['amplitudes'])
+
+fig2 = px.bar(frequency_data, x="frequencies", y="amplitudes", title="Amplitude vs Frequency")
+
 
 
 dash_app.layout = html.Div([  
-    #dcc.Graph(id='bar-chart',figure=fig)
-    dcc.Store(id='frequency-data', data={}),  # To store frequency data
-    dcc.Graph(id='bar-chart',figure=update_bar_chart(None)),
+    dcc.Graph(id='bar-chart',figure=fig2)
+    #dcc.Store(id='frequency-data', data={}),  # To store frequency data
+    #dcc.Graph(id='bar-chart',figure=update_bar_chart(None)),
     #html.Div(id='graph-container', style={'display': 'none'})  # Hidden div for handling updates
 ])
 
