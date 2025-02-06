@@ -641,6 +641,9 @@ frequency_data=frequency_data[frequency_data['notes']!='aaa']
 
 frequency_data2=frequency_data.groupby('notes').mean()
 frequency_data2=frequency_data2.reset_index()
+frequency_data2=frequency_data2.sample(len(frequency_data2))
+idx=frequency_data2.index.tolist()
+colors=[colors[i] for i in idx]
 print(frequency_data.head())
 fig2 = px.bar(frequency_data2, x="notes", y="amplitudes", title="Amplitude vs Frequency")
 fig2.update_traces(marker_color=colors)
