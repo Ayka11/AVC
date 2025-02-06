@@ -8,6 +8,7 @@ import librosa.display
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import io
+import os
 import base64
 
 from PIL import Image, ImageDraw, ImageFont
