@@ -626,17 +626,19 @@ amplitudes = list(frequency_data['amplitudes'])
 # Convert received data into a DataFrame
 df = pd.DataFrame(frequency_data)
 
-frequency_data['notes']=['a']*len(frequency_data)
+frequency_data['notes']=['aaa']*len(frequency_data)
 
 for note in frequency_colors_update:
         lower_bound, upper_bound = frequency_colors_update[note]["range"]
-        freq_data = frequency_data[(frequency_data['Frequency'] > lower_bound) & (frequency_data['Frequency'] < upper_bound)]
+        freq_data = frequency_data[(frequency_data['frequencies'] > lower_bound) & (frequency_data['frequencies'] < upper_bound)]
         frequency_data.loc[freq_data.index.tolist(),'notes']=note
 
+frequency_data=frequency_data[frequency_data['notes']!='aaa']
 
-fig2 = px.bar(frequency_data.iloc[:10,:], x="notes", y="amplitudes", title="Amplitude vs Frequency")
-
-
+frequency_data2=frequency_data.groupby('notes').mean()
+frequency_data2=frequency_data2.reset_index()
+print(frequency_data.head())
+fig2 = px.bar(frequency_data2, x="notes", y="amplitudes", title="Amplitude vs Frequency")
 
 dash_app.layout = html.Div([  
     dcc.Graph(id='bar-chart',figure=fig2)
