@@ -624,7 +624,7 @@ frequency_data=freqq
 frequencies = list(frequency_data['frequencies'])
 amplitudes = list(frequency_data['amplitudes'])
 
-fig2 = px.bar(frequency_data, x="frequencies", y="amplitudes", title="Amplitude vs Frequency")
+fig2 = px.bar(frequency_data.iloc[:10,:], x="frequencies", y="amplitudes", title="Amplitude vs Frequency")
 
 
 
