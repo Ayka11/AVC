@@ -614,15 +614,10 @@ df = px.data.gapminder()
 fig = px.bar(df[df["year"] == 2007], x="continent", y="pop", title="Population by Continent")
 
 
-dash_app.layout = html.Div([
-    dcc.Dropdown(
-        id="year-dropdown",
-        options=[{"label": str(year), "value": year} for year in df["year"].unique()],
-        value=2007
-    ),
-    dcc.Graph(id='bar-chart',figure=fig)
-    #dcc.Store(id='frequency-data', data={}),  # To store frequency data
-    #dcc.Graph(id='bar-chart',figure=update_bar_chart(None)),
+dash_app.layout = html.Div([  
+    #dcc.Graph(id='bar-chart',figure=fig)
+    dcc.Store(id='frequency-data', data={}),  # To store frequency data
+    dcc.Graph(id='bar-chart',figure=update_bar_chart(None)),
     #html.Div(id='graph-container', style={'display': 'none'})  # Hidden div for handling updates
 ])
 
