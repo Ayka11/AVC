@@ -623,8 +623,18 @@ freqq=pd.read_csv('freq.csv')
 frequency_data=freqq
 frequencies = list(frequency_data['frequencies'])
 amplitudes = list(frequency_data['amplitudes'])
+# Convert received data into a DataFrame
+df = pd.DataFrame(frequency_data)
 
-fig2 = px.bar(frequency_data.iloc[:10,:], x="frequencies", y="amplitudes", title="Amplitude vs Frequency")
+frequency_data['notes']=['a']*len(frequency_data)
+
+for note in frequency_colors_update:
+        lower_bound, upper_bound = frequency_colors_update[note]["range"]
+        freq_data = frequency_data[(frequency_data['Frequency'] > lower_bound) & (frequency_data['Frequency'] < upper_bound)]
+        frequency_data.loc[freq_data.index.tolist(),'notes']=note
+
+
+fig2 = px.bar(frequency_data.iloc[:10,:], x="notes", y="amplitudes", title="Amplitude vs Frequency")
 
 
 
