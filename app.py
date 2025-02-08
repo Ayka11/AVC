@@ -644,7 +644,7 @@ frequency_data2=frequency_data2.sample(len(frequency_data2))
 idx=frequency_data2.index.tolist()
 colors=[colors[i] for i in idx]
 print(frequency_data.head())
-category_orders={"notes":df["notes"].tolist()}
+category_orders={"notes":frequency_data2["notes"].tolist()}
 
 fig2 = px.bar(frequency_data2, x="notes", y="amplitudes", title="Amplitude vs Frequency")
 fig2.update_traces(marker_color=colors)
