@@ -36,7 +36,6 @@ global session
 app = Flask(__name__)
 app.secret_key = 'Lantop2333'  # Set a secret key session
 
-# Initialize Dash app
 dash_app = Dash(__name__, server=app, url_base_pathname='/dash/')
 
 
