@@ -312,6 +312,7 @@ def upload_audio():
         #session['frequency_data'] = frequency_data
 
         df=pd.DataFrame(frequency_data)
+        os.remove('freq.csv')     
         df.to_csv('freq.csv',index=0)
         
         # here plot_url=plot_url
