@@ -639,7 +639,7 @@ for note in frequency_colors_update:
 
 frequency_data=frequency_data[frequency_data['notes']!='aaa']
 
-frequency_data2=frequency_data.groupby('notes').mean()
+frequency_data2=frequency_data.groupby('notes').sum()
 frequency_data2=frequency_data2.reset_index()
 frequency_data2=frequency_data2.sample(len(frequency_data2))
 idx=frequency_data2.index.tolist()
