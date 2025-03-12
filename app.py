@@ -1,5 +1,6 @@
 import matplotlib
 matplotlib.use('Agg') 
+
 import colorsys
 from flask import Flask, render_template, request,session
 import numpy as np
