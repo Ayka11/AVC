@@ -33,11 +33,11 @@
 				<img src="data:image/png;base64,{{ plot_url2 }}" alt="Spectrogram" class="img-fluid">
 			</div>
 		{% endif %}
-
+         <br><br><br>
 	<h1>Upload a Music File</h1>
 	<form action="/process_gif" method="post" enctype="multipart/form-data">
-	        <input type="file" name="audio" accept="audio/*" required>
-	        <input type="submit" value="Upload and Generate Image">
+	        <input type="file"  class="form-control" name="audio" accept="audio/*" required>
+	        <input type="submit" class="btn btn-primary" value="Upload and Generate Image">
 	</form>
 	    
 	{% if gif_file %}
