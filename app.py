@@ -680,7 +680,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 @app.route('/process_gif', methods=['GET', 'POST'])
-def upload_file():
+def process_gif():
     gif_filename = None
 
     if request.method == 'POST':
