@@ -11,3 +11,6 @@ dash
 pandas
 plotly==5.18.0
 setuptools
+Pillow
+imageio
+
