@@ -34,7 +34,7 @@
 			</div>
 		{% endif %}
          <br><br><br>
-	<h1>Upload a Music File</h1>
+	<h1>Musical Note representation</h1>
 	<form action="/process_gif" method="post" enctype="multipart/form-data">
 	        <input type="file"  class="form-control" name="audio" accept="audio/*" required>
 	        <input type="submit" class="btn btn-primary" value="Upload and Generate Image">
@@ -48,7 +48,7 @@
 	    </div>
 	
 	    <a href="{{ url_for('download_gif', filename=gif_file) }}">
-	        <button type="button">Download the Image</button>
+	        <button type="button" class="btn btn-secondary">Download the Image</button>
 	    </a>
          {% endif %}
 		
