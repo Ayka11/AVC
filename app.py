@@ -11,6 +11,8 @@ import matplotlib.colors as mcolors
 import io
 import os
 import base64
+from music_visualizer import process_audio_to_gif
+
 
 from PIL import Image, ImageDraw, ImageFont
 import string
@@ -665,6 +667,54 @@ dash_app.layout = html.Div([
 def load_frequency_data(_):
     frequency_data = session.get('frequency_data', {})
     return frequency_data  # Return the data to the Store
+
+# Config
+UPLOAD_FOLDER = 'static/uploads'
+OUTPUT_FOLDER = 'static/output'
+ALLOWED_EXTENSIONS = {'wav', 'mp3', 'ogg', 'flac'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+
+@app.route('/process_gif', methods=['GET', 'POST'])
+def upload_file():
+    gif_filename = None
+
+    if request.method == 'POST':
+        if 'audio' not in request.files:
+            return 'No file part'
+
+        file = request.files['audio']
+        if file.filename == '':
+            return 'No selected file'
+
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+
+            gif_filename = os.path.splitext(filename)[0] + '.gif'
+            gif_filename = 'music.png'
+            gif_path = os.path.join(app.config['OUTPUT_FOLDER'], gif_filename)
+            print('here',gif_path)
+
+            # Process uploaded audio and generate GIF
+            process_audio_to_gif(filepath, gif_path)
+   
+    return render_template('index.html', gif_file=gif_filename)
+
+
+@app.route('/static/output/<filename>')
+def serve_gif(filename):
+    return send_from_directory(app.config['OUTPUT_FOLDER'], filename)
+    
+@app.route('/download/<filename>')
+def download_gif(filename):
+    return send_from_directory(app.config['OUTPUT_FOLDER'], filename, as_attachment=True)
+
 
 if __name__ == '__main__':
      app.run(debug=True,host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
