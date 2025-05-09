@@ -18,6 +18,10 @@
               </div>
             <button type="submit" class="btn btn-primary">Upload</button>
         </form>
+
+	
+	
+
         {% if plot_url %}
         <div class="mt-5">
             <img src="data:image/png;base64,{{ plot_url }}" alt="Spectrogram" class="img-fluid">
@@ -29,6 +33,24 @@
 				<img src="data:image/png;base64,{{ plot_url2 }}" alt="Spectrogram" class="img-fluid">
 			</div>
 		{% endif %}
+
+	<h1>Upload a Music File</h1>
+	<form action="/process_gif" method="post" enctype="multipart/form-data">
+	        <input type="file" name="audio" accept="audio/*" required>
+	        <input type="submit" value="Upload and Generate Image">
+	</form>
+	    
+	{% if gif_file %}
+	    <h2>Your Generated Music Visualization</h2>
+	    
+	    <div style="max-height: 350px; overflow-y: auto; border: 1px solid #ccc; padding: 1rem; border-radius: 10px;">
+	        <img src="{{ url_for('serve_gif', filename=gif_file) }}" alt="Music Visualization GIF">
+	    </div>
+	
+	    <a href="{{ url_for('download_gif', filename=gif_file) }}">
+	        <button type="button">Download the Image</button>
+	    </a>
+         {% endif %}
 		
 		
 		
