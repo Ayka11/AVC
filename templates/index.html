@@ -43,8 +43,8 @@
 	{% if gif_file %}
 	    <h2>Your Generated Music Visualization</h2>
 	    
-	    <div style="max-height: 350px; overflow-y: auto; border: 1px solid #ccc; padding: 1rem; border-radius: 10px;">
-	        <img src="{{ url_for('serve_gif', filename=gif_file) }}" alt="Music Visualization GIF">
+	    <div style="max-height: 380px; overflow-y: auto; border: 1px solid #ccc; padding: 1rem; border-radius: 10px;">
+	        <img src="{{ url_for('serve_gif', filename=gif_file) }}" alt="Music Visualization GIF" width="100%">
 	    </div>
 	
 	    <a href="{{ url_for('download_gif', filename=gif_file) }}">
