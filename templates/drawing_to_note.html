@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Draw to Sound</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+    }
+
+    #tools {
+      margin-bottom: 10px;
+    }
+
+    canvas {
+      border: 1px solid black;
+      cursor: crosshair;
+    }
+
+    .cell {
+      width: 20px;
+      height: 20px;
+    }
+
+    button, input[type="color"] {
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h2>🎵 Drawing to Sound</h2>
+
+  <div id="tools">
+    <input type="color" id="colorPicker" value="#ff0000">
+    <button onclick="setTool('brush')">🖌️ Brush</button>
+    <button onclick="setTool('eraser')">🧽 Eraser</button>
+    <button onclick="clearGrid()">🗑️ Clear</button>
+    <button onclick="submitDrawing()">▶️ Play Drawing</button>
+  </div>
+
+  <canvas id="gridCanvas" width="600" height="300"></canvas>
+  <br>
+  <audio id="player" controls></audio>
+
+  <script>
+    const canvas = document.getElementById('gridCanvas');
+    const ctx = canvas.getContext('2d');
+    const rows = 15;
+    const cols = 30;
+    const cellSize = 20;
+    let tool = 'brush';
+    let isDrawing = false;
+    const grid = Array.from({ length: rows }, () => Array(cols).fill(null));
+
+    function setTool(selected) {
+      tool = selected;
+    }
+
+    function clearGrid() {
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          grid[r][c] = null;
+        }
+      }
+      drawGrid();
+    }
+
+    function drawGrid() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const color = grid[r][c];
+          if (color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
+          }
+          ctx.strokeStyle = '#ccc';
+          ctx.strokeRect(c * cellSize, r * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+
+    canvas.addEventListener('mousedown', (e) => {
+      isDrawing = true;
+      handleDraw(e);
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (isDrawing) {
+        handleDraw(e);
+      }
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      isDrawing = false;
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      isDrawing = false;
+    });
+
+    function handleDraw(e) {
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.floor((e.clientX - rect.left) / cellSize);
+      const y = Math.floor((e.clientY - rect.top) / cellSize);
+      if (x >= 0 && y >= 0 && x < cols && y < rows) {
+        grid[y][x] = (tool === 'brush') ? document.getElementById('colorPicker').value : null;
+        drawGrid();
+      }
+    }
+
+    async function submitDrawing() {
+      const points = [];
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const color = grid[r][c];
+          if (color) {
+            points.push({
+              time: c,
+              pitch: r,
+              color: color
+            });
+          }
+        }
+      }
+
+      const res = await fetch('/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(points)
+      });
+
+      const data = await res.json();
+      const player = document.getElementById('player');
+      player.src = data.url + '?t=' + new Date().getTime(); // prevent caching
+      player.play();
+    }
+
+    drawGrid();
+  </script>
+</body>
+</html>
