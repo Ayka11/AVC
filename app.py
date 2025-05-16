@@ -709,6 +709,8 @@ def process_gif():
    
     return render_template('index.html', gif_file=gif_filename)
 
+OUTPUT_DIR = "static/audio"
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 @app.route('/static/output/<filename>')
 def serve_gif(filename):
@@ -721,6 +723,74 @@ def download_gif(filename):
 @app.route('/drawing2audio')
 def drawing2audio():
     return render_template('drawing_to_note.html')
+
+NOTE_TO_SEMITONE = {
+    'C': 0, 'C#': 1, 'D': 2, 'D#': 3,
+    'E': 4, 'F': 5, 'F#': 6, 'G': 7,
+    'G#': 8, 'A': 9, 'A#': 10, 'B': 11
+}
+note_names = list(NOTE_TO_SEMITONE.keys())
+SAMPLE_RATE = 44100
+
+def hue_to_note_name(hue):
+    index = int((hue % 360) / 30)
+    return note_names[index]
+
+def brightness_to_octave(brightness):
+    return int(3 + brightness * 3)
+
+def color_to_frequency(r, g, b):
+    h, s, v = rgb_to_hsv(r / 255, g / 255, b / 255)
+    hue_deg = h * 360
+    note_name = hue_to_note_name(hue_deg)
+    octave = brightness_to_octave(v)
+    midi_note = 12 + octave * 12 + NOTE_TO_SEMITONE[note_name]
+    return 440 * 2 ** ((midi_note - 69) / 12)
+
+def generate_tone(frequencies, duration=0.3):
+    t = np.linspace(0, duration, int(SAMPLE_RATE * duration), False)
+    waveform = sum(np.sin(2 * np.pi * f * t) for f in frequencies)
+    waveform = waveform / np.max(np.abs(waveform))  # Normalize
+    return waveform
+
+@app.route('/submit', methods=['POST'])
+def submit():
+    data = request.json
+    time_dict = {}
+
+    for point in data:
+        time_step = point['time']
+        row = point['pitch']
+        color = point['color']
+
+        if color.startswith("#"):
+            r = int(color[1:3], 16)
+            g = int(color[3:5], 16)
+            b = int(color[5:7], 16)
+        else:
+            continue
+
+        freq = color_to_frequency(r, g, b)
+        time_dict.setdefault(time_step, []).append(freq)
+
+    time_steps = sorted(time_dict.keys())
+    audio = np.concatenate([
+        generate_tone(time_dict[t]) for t in time_steps
+    ])
+
+    audio_int16 = np.int16(audio * 32767)
+    timestamp = int(time.time() * 1000)
+    filename = f"sound_{timestamp}.wav"
+    filepath = os.path.join(OUTPUT_DIR, filename)
+    write_wav(filepath, SAMPLE_RATE, audio_int16)
+
+    return jsonify({
+        "url": f"/static/audio/{filename}"
+    })
+
+@app.route('/static/audio/<path:filename>')
+def serve_audio(filename):
+    return send_from_directory(OUTPUT_DIR, filename)
          
 if __name__ == '__main__':
      app.run(debug=True,host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
