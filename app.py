@@ -718,7 +718,10 @@ def serve_gif(filename):
 def download_gif(filename):
     return send_from_directory(app.config['OUTPUT_FOLDER'], filename, as_attachment=True)
 
-
+@app.route('/drawing2audio')
+def drawing2audio():
+    return render_template('drawing_to_note.html')
+         
 if __name__ == '__main__':
      app.run(debug=True,host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
 
