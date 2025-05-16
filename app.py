@@ -12,6 +12,9 @@ import io
 import os
 import base64
 from music_visualizer import process_audio_to_gif
+from scipy.io.wavfile import write as write_wav
+from colorsys import rgb_to_hsv
+
 
 
 from PIL import Image, ImageDraw, ImageFont
