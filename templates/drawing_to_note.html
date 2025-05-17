@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <title>Draw to Sound</title>
   <style>
     body {
@@ -17,13 +18,9 @@
       cursor: crosshair;
     }
 
-    .cell {
-      width: 20px;
-      height: 20px;
-    }
-
-    button, input[type="color"] {
+    select, button, input[type="color"] {
       margin: 5px;
+      padding: 5px;
     }
   </style>
 </head>
@@ -31,103 +28,138 @@
   <h2>🎵 Drawing to Sound</h2>
 
   <div id="tools">
-    <input type="color" id="colorPicker" value="#ff0000">
-    <button onclick="setTool('brush')">🖌️ Brush</button>
-    <button onclick="setTool('eraser')">🧽 Eraser</button>
-    <button onclick="clearGrid()">🗑️ Clear</button>
+    <input type="color" id="colorPicker" value="#ff0000" />
+    <select id="toolSelect">
+      <option value="round">Round Brush</option>
+      <option value="square">Square Brush</option>
+      <option value="spray">Spray</option>
+      <option value="star">Star</option>
+      <option value="cross">Cross</option>
+      <option value="line">Line</option>
+    </select>
+    <button onclick="clearCanvas()">🗑️ Clear</button>
     <button onclick="submitDrawing()">▶️ Play Drawing</button>
   </div>
 
-  <canvas id="gridCanvas" width="600" height="300"></canvas>
-  <br>
+  <canvas id="drawingCanvas" width="900" height="450"></canvas>
+  <br />
   <audio id="player" controls></audio>
 
   <script>
-    const canvas = document.getElementById('gridCanvas');
+    const canvas = document.getElementById('drawingCanvas');
     const ctx = canvas.getContext('2d');
-    const rows = 15;
-    const cols = 30;
-    const cellSize = 20;
-    let tool = 'brush';
-    let isDrawing = false;
-    const grid = Array.from({ length: rows }, () => Array(cols).fill(null));
+    const colorPicker = document.getElementById('colorPicker');
+    const toolSelect = document.getElementById('toolSelect');
 
-    function setTool(selected) {
-      tool = selected;
-    }
+    let drawing = false;
+    let startX = 0, startY = 0;
 
-    function clearGrid() {
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          grid[r][c] = null;
-        }
-      }
-      drawGrid();
-    }
-
-    function drawGrid() {
+    function clearCanvas() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const color = grid[r][c];
-          if (color) {
-            ctx.fillStyle = color;
-            ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
+    }
+
+    canvas.addEventListener('mousedown', e => {
+      drawing = true;
+      const { x, y } = getMousePos(e);
+      startX = x;
+      startY = y;
+
+      if (toolSelect.value !== 'line') {
+        drawAt(x, y);
+      }
+    });
+
+    canvas.addEventListener('mousemove', e => {
+      if (!drawing || toolSelect.value === 'line') return;
+      const { x, y } = getMousePos(e);
+      drawAt(x, y);
+    });
+
+    canvas.addEventListener('mouseup', e => {
+      if (!drawing) return;
+      drawing = false;
+
+      if (toolSelect.value === 'line') {
+        const { x, y } = getMousePos(e);
+        ctx.strokeStyle = colorPicker.value;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+      }
+    });
+
+    function getMousePos(e) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    }
+
+    function drawAt(x, y) {
+      const color = colorPicker.value;
+      ctx.fillStyle = color;
+      ctx.strokeStyle = color;
+
+      switch (toolSelect.value) {
+        case 'round':
+          ctx.beginPath();
+          ctx.arc(x, y, 5, 0, 2 * Math.PI);
+          ctx.fill();
+          break;
+        case 'square':
+          ctx.fillRect(x - 5, y - 5, 10, 10);
+          break;
+        case 'spray':
+          for (let i = 0; i < 10; i++) {
+            const offsetX = (Math.random() - 0.5) * 20;
+            const offsetY = (Math.random() - 0.5) * 20;
+            ctx.fillRect(x + offsetX, y + offsetY, 1, 1);
           }
-          ctx.strokeStyle = '#ccc';
-          ctx.strokeRect(c * cellSize, r * cellSize, cellSize, cellSize);
-        }
+          break;
+        case 'star':
+          drawStar(x, y, 5, 7, 3);
+          break;
+        case 'cross':
+          ctx.beginPath();
+          ctx.moveTo(x - 5, y);
+          ctx.lineTo(x + 5, y);
+          ctx.moveTo(x, y - 5);
+          ctx.lineTo(x, y + 5);
+          ctx.stroke();
+          break;
       }
     }
 
-    canvas.addEventListener('mousedown', (e) => {
-      isDrawing = true;
-      handleDraw(e);
-    });
+    function drawStar(cx, cy, spikes, outerRadius, innerRadius) {
+      const rot = Math.PI / 2 * 3;
+      let x = cx;
+      let y = cy;
+      const step = Math.PI / spikes;
 
-    canvas.addEventListener('mousemove', (e) => {
-      if (isDrawing) {
-        handleDraw(e);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - outerRadius);
+      for (let i = 0; i < spikes; i++) {
+        x = cx + Math.cos(rot + step * i * 2) * outerRadius;
+        y = cy + Math.sin(rot + step * i * 2) * outerRadius;
+        ctx.lineTo(x, y);
+        x = cx + Math.cos(rot + step * (i * 2 + 1)) * innerRadius;
+        y = cy + Math.sin(rot + step * (i * 2 + 1)) * innerRadius;
+        ctx.lineTo(x, y);
       }
-    });
-
-    canvas.addEventListener('mouseup', () => {
-      isDrawing = false;
-    });
-
-    canvas.addEventListener('mouseleave', () => {
-      isDrawing = false;
-    });
-
-    function handleDraw(e) {
-      const rect = canvas.getBoundingClientRect();
-      const x = Math.floor((e.clientX - rect.left) / cellSize);
-      const y = Math.floor((e.clientY - rect.top) / cellSize);
-      if (x >= 0 && y >= 0 && x < cols && y < rows) {
-        grid[y][x] = (tool === 'brush') ? document.getElementById('colorPicker').value : null;
-        drawGrid();
-      }
+      ctx.closePath();
+      ctx.fill();
     }
 
     async function submitDrawing() {
-      const points = [];
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const color = grid[r][c];
-          if (color) {
-            points.push({
-              time: c,
-              pitch: r,
-              color: color
-            });
-          }
-        }
-      }
+      const dataURL = canvas.toDataURL("image/png");
 
       const res = await fetch('/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(points)
+        body: JSON.stringify({ image: dataURL })
       });
 
       const data = await res.json();
@@ -135,8 +167,6 @@
       player.src = data.url + '?t=' + new Date().getTime(); // prevent caching
       player.play();
     }
-
-    drawGrid();
   </script>
 </body>
 </html>
