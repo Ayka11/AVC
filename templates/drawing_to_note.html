@@ -16,6 +16,7 @@
     canvas {
       border: 1px solid black;
       cursor: crosshair;
+      touch-action: none; /* Prevent scrolling while drawing */
     }
 
     select, button, input[type="color"] {
@@ -90,11 +91,56 @@
       }
     });
 
+    // Touch events for mobile
+    canvas.addEventListener('touchstart', e => {
+      e.preventDefault();
+      drawing = true;
+      const { x, y } = getTouchPos(e);
+      startX = x;
+      startY = y;
+
+      if (toolSelect.value !== 'line') {
+        drawAt(x, y);
+      }
+    });
+
+    canvas.addEventListener('touchmove', e => {
+      e.preventDefault();
+      if (!drawing || toolSelect.value === 'line') return;
+      const { x, y } = getTouchPos(e);
+      drawAt(x, y);
+    });
+
+    canvas.addEventListener('touchend', e => {
+      e.preventDefault();
+      if (!drawing) return;
+      drawing = false;
+
+      if (toolSelect.value === 'line') {
+        const { x, y } = getTouchPos(e);
+        ctx.strokeStyle = colorPicker.value;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+      }
+    });
+
     function getMousePos(e) {
       const rect = canvas.getBoundingClientRect();
       return {
         x: e.clientX - rect.left,
         y: e.clientY - rect.top
+      };
+    }
+
+    function getTouchPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const touch = e.touches[0] || e.changedTouches[0];
+      return {
+        x: touch.clientX - rect.left,
+        y: touch.clientY - rect.top
       };
     }
 
