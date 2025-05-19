@@ -1,20 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color Code to Text</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Audio to Color Code and Color Code to Audio, Free Conversion</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
   <title>Draw to Sound</title>
   <style>
     body {
       font-family: sans-serif;
       text-align: center;
-      justify-content: center;
-      gap: 30px;
-      padding: 20px;
+    }
+	
+	#shortcuts {
+      background-color: #f0f0f0;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-size: 14px;
     }
 
     #tools {
@@ -27,73 +32,150 @@
       touch-action: none;
     }
 
-    select, button, input[type="color"] {
+    select, button, input[type="color"], input[type="range"], input[type="file"] {
       margin: 5px;
       padding: 5px;
     }
-
-    #info {
-      text-align: left;
-      max-width: 250px;
-      font-size: 14px;
-    }
-
-    #info h3 {
-      margin-top: 0;
+	 #colorButtons button {
+      width: 30px;
+      height: 30px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  {% include 'navbar.html' %}
-  <div>
-    <h2>🎵 Drawing to Sound</h2>
+	{% include 'navbar.html' %}
+  <h2>🎵 Drawing to Sound</h2>
+   <div id="shortcuts">
+    <strong>Keyboard Shortcuts:</strong><br>
+    Ctrl+Z: Undo &nbsp;|&nbsp;
+    Ctrl+Y: Redo &nbsp;|&nbsp;
+    Ctrl+S: Save Image &nbsp;|&nbsp;
+    Ctrl+C: Clear Canvas <br>
+    [ or ]: Adjust Brush Size &nbsp;|&nbsp;
+    1: Rectangle, 2: Line, 3: Circle, 4: Star, 5: Spray
+  </div>
+  
+   <div id="colorButtons">
+    <button style="background-color: red;" onclick="setColor('#ff0000')"></button>
+    <button style="background-color: green;" onclick="setColor('#00ff00')"></button>
+    <button style="background-color: blue;" onclick="setColor('#0000ff')"></button>
+    <button style="background-color: black;" onclick="setColor('#000000')"></button>
+    <button style="background-color: yellow;" onclick="setColor('#ffff00')"></button>
+	<!-- Colors from freq_symbols dictionary -->
+<button style="background-color: #8b0000;" onclick="setColor('#8b0000')"></button> <!-- [139, 0, 0] -->
+<button style="background-color: #ff4500;" onclick="setColor('#ff4500')"></button> <!-- [255, 69, 0] -->
+<button style="background-color: #cccc00;" onclick="setColor('#cccc00')"></button> <!-- [204, 204, 0] -->
+<button style="background-color: #669800;" onclick="setColor('#669800')"></button> <!-- [102, 152, 0] -->
+<button style="background-color: #006400;" onclick="setColor('#006400')"></button> <!-- [0, 100, 0] -->
+<button style="background-color: #003245;" onclick="setColor('#003245')"></button> <!-- [0, 50, 69] -->
+<button style="background-color: #00008b;" onclick="setColor('#00008b')"></button> <!-- [0, 0, 139] -->
+<button style="background-color: #4b0082;" onclick="setColor('#4b0082')"></button> <!-- [75, 0, 130] -->
+<button style="background-color: #7000ab;" onclick="setColor('#7000ab')"></button> <!-- [112, 0, 171] -->
+<button style="background-color: #9400d3;" onclick="setColor('#9400d3')"></button> <!-- [148, 0, 211] -->
+<button style="background-color: #9d006a;" onclick="setColor('#9d006a')"></button> <!-- [157, 0, 106] -->
+<button style="background-color: #a50000;" onclick="setColor('#a50000')"></button> <!-- [165, 0, 0] -->
+<button style="background-color: #d20080;" onclick="setColor('#d20080')"></button> <!-- [210, 0, 128] -->
+<button style="background-color: #ff5e00;" onclick="setColor('#ff5e00')"></button> <!-- [255, 94, 0] -->
+<button style="background-color: #dddd00;" onclick="setColor('#dddd00')"></button> <!-- [221, 221, 0] -->
+<button style="background-color: #6faf00;" onclick="setColor('#6faf00')"></button> <!-- [111, 175, 0] -->
+<button style="background-color: #008000;" onclick="setColor('#008000')"></button> <!-- [0, 128, 0] -->
+<button style="background-color: #004055;" onclick="setColor('#004055')"></button> <!-- [0, 64, 85] -->
+<button style="background-color: #0000aa;" onclick="setColor('#0000aa')"></button> <!-- [0, 0, 170] -->
+<button style="background-color: #5c009f;" onclick="setColor('#5c009f')"></button> <!-- [92, 0, 159] -->
+<button style="background-color: #770060;" onclick="setColor('#770060')"></button> <!-- [119, 0, 96] -->
+<button style="background-color: #9f00e2;" onclick="setColor('#9f00e2')"></button> <!-- [159, 0, 226] -->
+<button style="background-color: #af0071;" onclick="setColor('#af0071')"></button> <!-- [175, 0, 113] -->
+<button style="background-color: #bf0000;" onclick="setColor('#bf0000')"></button> <!-- [191, 0, 0] -->
+<button style="background-color: #df3b80;" onclick="setColor('#df3b80')"></button> <!-- [223, 59, 128] -->
+<button style="background-color: #ff7700;" onclick="setColor('#ff7700')"></button> <!-- [255, 119, 0] -->
+<button style="background-color: #eeee00;" onclick="setColor('#eeee00')"></button> <!-- [238, 238, 0] -->
+<button style="background-color: #7cbf00;" onclick="setColor('#7cbf00')"></button> <!-- [124, 191, 0] -->
+<button style="background-color: #009b00;" onclick="setColor('#009b00')"></button> <!-- [0, 155, 0] -->
+<button style="background-color: #005064;" onclick="setColor('#005064')"></button> <!-- [0, 80, 100] -->
+<button style="background-color: #0000c8;" onclick="setColor('#0000c8')"></button> <!-- [0, 0, 200] -->
+<button style="background-color: #6e00b4;" onclick="setColor('#6e00b4')"></button> <!-- [110, 0, 180] -->
+<button style="background-color: #8c006e;" onclick="setColor('#8c006e')"></button> <!-- [140, 0, 110] -->
+<button style="background-color: #aa00f0;" onclick="setColor('#aa00f0')"></button> <!-- [170, 0, 240] -->
+<button style="background-color: #be0082;" onclick="setColor('#be0082')"></button> <!-- [190, 0, 130] -->
+<button style="background-color: #d20000;" onclick="setColor('#d20000')"></button> <!-- [210, 0, 0] -->
+<button style="background-color: #f05591;" onclick="setColor('#f05591')"></button> <!-- [240, 85, 145] -->
+<button style="background-color: #ff9100;" onclick="setColor('#ff9100')"></button> <!-- [255, 145, 0] -->
+<button style="background-color: #fafa00;" onclick="setColor('#fafa00')"></button> <!-- [250, 250, 0] -->
+<button style="background-color: #82cd00;" onclick="setColor('#82cd00')"></button> <!-- [130, 205, 0] -->
+<button style="background-color: #00b400;" onclick="setColor('#00b400')"></button> <!-- [0, 180, 0] -->
+<button style="background-color: #006478;" onclick="setColor('#006478')"></button> <!-- [0, 100, 120] -->
+<button style="background-color: #0000e6;" onclick="setColor('#0000e6')"></button> <!-- [0, 0, 230] -->
+<button style="background-color: #7800c8;" onclick="setColor('#7800c8')"></button> <!-- [120, 0, 200] -->
+<button style="background-color: #a00078;" onclick="setColor('#a00078')"></button> <!-- [160, 0, 120] -->
+<button style="background-color: #b400ff;" onclick="setColor('#b400ff')"></button> <!-- [180, 0, 255] -->
+<button style="background-color: #c8008c;" onclick="setColor('#c8008c')"></button> <!-- [200, 0, 140] -->
+<button style="background-color: #e60000;" onclick="setColor('#e60000')"></button> <!-- [230, 0, 0] -->
+<button style="background-color: #ff66a0;" onclick="setColor('#ff66a0')"></button> <!-- [255, 102, 160] -->
+<button style="background-color: #ffaa00;" onclick="setColor('#ffaa00')"></button> <!-- [255, 170, 0] -->
+<button style="background-color: #ffff00;" onclick="setColor('#ffff00')"></button> <!-- [255, 255, 0] -->
 
-    <div id="tools">
-      <input type="color" id="colorPicker" value="#ff0000" />
-      <select id="toolSelect">
-        <option value="square">Rectangle</option>
-        <option value="line">Line</option>
-        <option value="round">Circle</option>
-        <option value="star">Star</option>
-        <option value="spray">Spray</option>
-      </select>
-      <button onclick="clearCanvas()">🗑️ Clear</button>
-      <button onclick="submitDrawing()">▶️ Play Drawing</button>
-    </div>
+<!-- Optionally add more unique ones if later dictionary entries contain more -->
 
-    <canvas id="drawingCanvas" width="900" height="450"></canvas>
-    <br />
-    <audio id="player" controls></audio>
   </div>
 
-  <div id="info">
-    <h3>🧠 Keyboard Shortcuts</h3>
-    <ul>
-      <li><b>Ctrl + Z</b>: Undo</li>
-      <li><b>Ctrl + Y</b>: Redo</li>
-      <li><b>Ctrl + S</b>: Save</li>
-      <li><b>Ctrl + C</b>: Clear</li>
-      <li><b>1</b>: Rectangle</li>
-      <li><b>2</b>: Line</li>
-      <li><b>3</b>: Circle</li>
-      <li><b>4</b>: Star</li>
-      <li><b>5</b>: Spray</li>
-      <li><b>[</b> / <b>]</b>: Brush size</li>
-      <li><b>-</b> / <b>+</b>: Canvas size</li>
-    </ul>
+  <div id="tools">
+    <input type="color" id="colorPicker" value="#ff0000" />
+    <select id="toolSelect">
+      <option value="square">Rectangle</option>
+      <option value="line">Line</option>
+      <option value="round">Circle</option>
+      <option value="star">Star</option>
+      <option value="spray">Spray</option>
+    </select>
+    <label>Brush Size:
+      <input type="range" id="brushSizeSlider" min="1" max="100" value="5" />
+    </label>
+    <button onclick="undo()">↩️ Undo</button>
+    <button onclick="redo()">↪️ Redo</button>
+    <button onclick="clearCanvas()">🗑️ Clear</button>
+    <button onclick="submitDrawing()">▶️ Play Drawing</button>
+    <button onclick="saveImage()">💾 Save Image</button>
+    <input type="file" id="uploadImage" accept="image/*" />
+    <button onclick="downloadAudio()">⬇️ Download Audio</button>
   </div>
+
+  <canvas id="drawingCanvas" width="900" height="450"></canvas>
+  <br />
+  <audio id="player" controls></audio>
 
   <script>
     const canvas = document.getElementById('drawingCanvas');
     const ctx = canvas.getContext('2d');
     const colorPicker = document.getElementById('colorPicker');
     const toolSelect = document.getElementById('toolSelect');
+    const brushSizeSlider = document.getElementById('brushSizeSlider');
+    const uploadImage = document.getElementById('uploadImage');
+    const player = document.getElementById('player');
 
     let drawing = false;
     let startX = 0, startY = 0;
-    let brushSize = 5;
+    let brushSize = parseInt(brushSizeSlider.value);
     const history = [];
     const redoStack = [];
+
+    brushSizeSlider.addEventListener('input', () => {
+      brushSize = parseInt(brushSizeSlider.value);
+    });
+
+    uploadImage.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        const img = new Image();
+        img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
 
     function saveState() {
       history.push(canvas.toDataURL());
@@ -106,10 +188,7 @@
       stackTo.push(canvas.toDataURL());
 
       const img = new Image();
-      img.onload = () => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0);
-      };
+      img.onload = () => ctx.drawImage(img, 0, 0);
       img.src = last;
     }
 
@@ -133,16 +212,12 @@
       link.click();
     }
 
-    function resizeCanvas(scale) {
-      saveState();
-      const temp = document.createElement('canvas');
-      temp.width = canvas.width;
-      temp.height = canvas.height;
-      temp.getContext('2d').drawImage(canvas, 0, 0);
-
-      canvas.width *= scale;
-      canvas.height *= scale;
-      ctx.drawImage(temp, 0, 0, canvas.width, canvas.height);
+    function downloadAudio() {
+      if (!player.src) return alert('No audio available!');
+      const link = document.createElement('a');
+      link.href = player.src;
+      link.download = 'drawing_sound.wav';
+      link.click();
     }
 
     canvas.addEventListener('mousedown', e => {
@@ -151,7 +226,10 @@
       startX = x;
       startY = y;
       saveState();
-      if (toolSelect.value !== 'line') drawAt(x, y);
+
+      if (toolSelect.value !== 'line') {
+        drawAt(x, y);
+      }
     });
 
     canvas.addEventListener('mousemove', e => {
@@ -182,6 +260,10 @@
         y: e.clientY - rect.top
       };
     }
+	
+	 function setColor(hex) {
+      colorPicker.value = hex;
+    }
 
     function drawAt(x, y) {
       const color = colorPicker.value;
@@ -206,14 +288,6 @@
           break;
         case 'star':
           drawStar(x, y, 5, brushSize * 1.5, brushSize / 2);
-          break;
-        case 'cross':
-          ctx.beginPath();
-          ctx.moveTo(x - brushSize, y);
-          ctx.lineTo(x + brushSize, y);
-          ctx.moveTo(x, y - brushSize);
-          ctx.lineTo(x, y + brushSize);
-          ctx.stroke();
           break;
       }
     }
@@ -248,7 +322,6 @@
       });
 
       const data = await res.json();
-      const player = document.getElementById('player');
       player.src = data.url + '?t=' + new Date().getTime();
       player.play();
     }
@@ -257,13 +330,21 @@
       if (e.ctrlKey) {
         switch (e.key.toLowerCase()) {
           case 'z':
-            e.preventDefault(); undo(); break;
+            e.preventDefault();
+            undo();
+            break;
           case 'y':
-            e.preventDefault(); redo(); break;
+            e.preventDefault();
+            redo();
+            break;
           case 's':
-            e.preventDefault(); saveImage(); break;
+            e.preventDefault();
+            saveImage();
+            break;
           case 'c':
-            e.preventDefault(); clearCanvas(); break;
+            e.preventDefault();
+            clearCanvas();
+            break;
         }
       } else {
         switch (e.key) {
@@ -272,11 +353,8 @@
           case '3': toolSelect.value = 'round'; break;
           case '4': toolSelect.value = 'star'; break;
           case '5': toolSelect.value = 'spray'; break;
-          case '[': brushSize = Math.max(1, brushSize - 1); break;
-          case ']': brushSize = Math.min(100, brushSize + 1); break;
-          case '-': resizeCanvas(0.9); break;
-          case '+':
-          case '=': resizeCanvas(1.1); break;
+          case '[': brushSize = Math.max(1, brushSize - 1); brushSizeSlider.value = brushSize; break;
+          case ']': brushSize = Math.min(100, brushSize + 1); brushSizeSlider.value = brushSize; break;
         }
       }
     });
