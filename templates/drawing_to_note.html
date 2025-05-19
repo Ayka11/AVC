@@ -7,6 +7,10 @@
     body {
       font-family: sans-serif;
       text-align: center;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 20px;
     }
 
     #tools {
@@ -16,35 +20,63 @@
     canvas {
       border: 1px solid black;
       cursor: crosshair;
-      touch-action: none; /* Prevent scrolling while drawing */
+      touch-action: none;
     }
 
     select, button, input[type="color"] {
       margin: 5px;
       padding: 5px;
     }
+
+    #info {
+      text-align: left;
+      max-width: 250px;
+      font-size: 14px;
+    }
+
+    #info h3 {
+      margin-top: 0;
+    }
   </style>
 </head>
 <body>
-  <h2>🎵 Drawing to Sound</h2>
+  <div>
+    <h2>🎵 Drawing to Sound</h2>
 
-  <div id="tools">
-    <input type="color" id="colorPicker" value="#ff0000" />
-    <select id="toolSelect">
-      <option value="round">Round Brush</option>
-      <option value="square">Square Brush</option>
-      <option value="spray">Spray</option>
-      <option value="star">Star</option>
-      <option value="cross">Cross</option>
-      <option value="line">Line</option>
-    </select>
-    <button onclick="clearCanvas()">🗑️ Clear</button>
-    <button onclick="submitDrawing()">▶️ Play Drawing</button>
+    <div id="tools">
+      <input type="color" id="colorPicker" value="#ff0000" />
+      <select id="toolSelect">
+        <option value="square">Rectangle</option>
+        <option value="line">Line</option>
+        <option value="round">Circle</option>
+        <option value="star">Star</option>
+        <option value="spray">Spray</option>
+      </select>
+      <button onclick="clearCanvas()">🗑️ Clear</button>
+      <button onclick="submitDrawing()">▶️ Play Drawing</button>
+    </div>
+
+    <canvas id="drawingCanvas" width="900" height="450"></canvas>
+    <br />
+    <audio id="player" controls></audio>
   </div>
 
-  <canvas id="drawingCanvas" width="900" height="450"></canvas>
-  <br />
-  <audio id="player" controls></audio>
+  <div id="info">
+    <h3>🧠 Keyboard Shortcuts</h3>
+    <ul>
+      <li><b>Ctrl + Z</b>: Undo</li>
+      <li><b>Ctrl + Y</b>: Redo</li>
+      <li><b>Ctrl + S</b>: Save</li>
+      <li><b>Ctrl + C</b>: Clear</li>
+      <li><b>1</b>: Rectangle</li>
+      <li><b>2</b>: Line</li>
+      <li><b>3</b>: Circle</li>
+      <li><b>4</b>: Star</li>
+      <li><b>5</b>: Spray</li>
+      <li><b>[</b> / <b>]</b>: Brush size</li>
+      <li><b>-</b> / <b>+</b>: Canvas size</li>
+    </ul>
+  </div>
 
   <script>
     const canvas = document.getElementById('drawingCanvas');
@@ -54,9 +86,58 @@
 
     let drawing = false;
     let startX = 0, startY = 0;
+    let brushSize = 5;
+    const history = [];
+    const redoStack = [];
+
+    function saveState() {
+      history.push(canvas.toDataURL());
+      if (history.length > 50) history.shift();
+    }
+
+    function restoreState(stackFrom, stackTo) {
+      if (stackFrom.length === 0) return;
+      const last = stackFrom.pop();
+      stackTo.push(canvas.toDataURL());
+
+      const img = new Image();
+      img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+      };
+      img.src = last;
+    }
+
+    function undo() {
+      restoreState(history, redoStack);
+    }
+
+    function redo() {
+      restoreState(redoStack, history);
+    }
 
     function clearCanvas() {
+      saveState();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function saveImage() {
+      const link = document.createElement('a');
+      link.download = 'drawing.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+
+    function resizeCanvas(scale) {
+      saveState();
+      const temp = document.createElement('canvas');
+      temp.width = canvas.width;
+      temp.height = canvas.height;
+      temp.getContext('2d').drawImage(canvas, 0, 0);
+
+      canvas.width *= scale;
+      canvas.height *= scale;
+      ctx.drawImage(temp, 0, 0, canvas.width, canvas.height);
     }
 
     canvas.addEventListener('mousedown', e => {
@@ -64,10 +145,8 @@
       const { x, y } = getMousePos(e);
       startX = x;
       startY = y;
-
-      if (toolSelect.value !== 'line') {
-        drawAt(x, y);
-      }
+      saveState();
+      if (toolSelect.value !== 'line') drawAt(x, y);
     });
 
     canvas.addEventListener('mousemove', e => {
@@ -83,43 +162,7 @@
       if (toolSelect.value === 'line') {
         const { x, y } = getMousePos(e);
         ctx.strokeStyle = colorPicker.value;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(startX, startY);
-        ctx.lineTo(x, y);
-        ctx.stroke();
-      }
-    });
-
-    // Touch events for mobile
-    canvas.addEventListener('touchstart', e => {
-      e.preventDefault();
-      drawing = true;
-      const { x, y } = getTouchPos(e);
-      startX = x;
-      startY = y;
-
-      if (toolSelect.value !== 'line') {
-        drawAt(x, y);
-      }
-    });
-
-    canvas.addEventListener('touchmove', e => {
-      e.preventDefault();
-      if (!drawing || toolSelect.value === 'line') return;
-      const { x, y } = getTouchPos(e);
-      drawAt(x, y);
-    });
-
-    canvas.addEventListener('touchend', e => {
-      e.preventDefault();
-      if (!drawing) return;
-      drawing = false;
-
-      if (toolSelect.value === 'line') {
-        const { x, y } = getTouchPos(e);
-        ctx.strokeStyle = colorPicker.value;
-        ctx.lineWidth = 3;
+        ctx.lineWidth = brushSize;
         ctx.beginPath();
         ctx.moveTo(startX, startY);
         ctx.lineTo(x, y);
@@ -135,15 +178,6 @@
       };
     }
 
-    function getTouchPos(e) {
-      const rect = canvas.getBoundingClientRect();
-      const touch = e.touches[0] || e.changedTouches[0];
-      return {
-        x: touch.clientX - rect.left,
-        y: touch.clientY - rect.top
-      };
-    }
-
     function drawAt(x, y) {
       const color = colorPicker.value;
       ctx.fillStyle = color;
@@ -152,28 +186,28 @@
       switch (toolSelect.value) {
         case 'round':
           ctx.beginPath();
-          ctx.arc(x, y, 5, 0, 2 * Math.PI);
+          ctx.arc(x, y, brushSize, 0, 2 * Math.PI);
           ctx.fill();
           break;
         case 'square':
-          ctx.fillRect(x - 5, y - 5, 10, 10);
+          ctx.fillRect(x - brushSize, y - brushSize, brushSize * 2, brushSize * 2);
           break;
         case 'spray':
           for (let i = 0; i < 10; i++) {
-            const offsetX = (Math.random() - 0.5) * 20;
-            const offsetY = (Math.random() - 0.5) * 20;
+            const offsetX = (Math.random() - 0.5) * brushSize * 4;
+            const offsetY = (Math.random() - 0.5) * brushSize * 4;
             ctx.fillRect(x + offsetX, y + offsetY, 1, 1);
           }
           break;
         case 'star':
-          drawStar(x, y, 5, 7, 3);
+          drawStar(x, y, 5, brushSize * 1.5, brushSize / 2);
           break;
         case 'cross':
           ctx.beginPath();
-          ctx.moveTo(x - 5, y);
-          ctx.lineTo(x + 5, y);
-          ctx.moveTo(x, y - 5);
-          ctx.lineTo(x, y + 5);
+          ctx.moveTo(x - brushSize, y);
+          ctx.lineTo(x + brushSize, y);
+          ctx.moveTo(x, y - brushSize);
+          ctx.lineTo(x, y + brushSize);
           ctx.stroke();
           break;
       }
@@ -210,9 +244,37 @@
 
       const data = await res.json();
       const player = document.getElementById('player');
-      player.src = data.url + '?t=' + new Date().getTime(); // prevent caching
+      player.src = data.url + '?t=' + new Date().getTime();
       player.play();
     }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey) {
+        switch (e.key.toLowerCase()) {
+          case 'z':
+            e.preventDefault(); undo(); break;
+          case 'y':
+            e.preventDefault(); redo(); break;
+          case 's':
+            e.preventDefault(); saveImage(); break;
+          case 'c':
+            e.preventDefault(); clearCanvas(); break;
+        }
+      } else {
+        switch (e.key) {
+          case '1': toolSelect.value = 'square'; break;
+          case '2': toolSelect.value = 'line'; break;
+          case '3': toolSelect.value = 'round'; break;
+          case '4': toolSelect.value = 'star'; break;
+          case '5': toolSelect.value = 'spray'; break;
+          case '[': brushSize = Math.max(1, brushSize - 1); break;
+          case ']': brushSize = Math.min(100, brushSize + 1); break;
+          case '-': resizeCanvas(0.9); break;
+          case '+':
+          case '=': resizeCanvas(1.1); break;
+        }
+      }
+    });
   </script>
 </body>
 </html>
