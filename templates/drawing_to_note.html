@@ -141,7 +141,7 @@
   </div>
 
   <canvas id="canvas" width="1000" height="500"></canvas>
-
+  <span> Time (sec) </span>
   <div id="actionButtons">
     <button onclick="submitDrawing()">🎼 Submit Drawing</button>
     <button onclick="downloadAudio()">🔊 Download Audio</button>
@@ -171,6 +171,7 @@
     canvas.width = width;
     canvas.height = height;
     saveState();
+	drawXAxisLabels();
   }
 
   window.addEventListener('resize', resizeCanvas);
@@ -282,6 +283,7 @@
     img.onload = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+	  drawXAxisLabels();
     };
     img.src = dataURL;
   }
@@ -296,6 +298,7 @@
   function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     saveState();
+	drawXAxisLabels();
   }
 
   async function submitDrawing() {
@@ -318,7 +321,36 @@
     link.click();
   }
 
+
+function drawXAxisLabels() {
+  const totalSeconds = 10;
+  const interval = 0.5;
+  const numberOfLabels = totalSeconds / interval + 1;
+  const labelY = canvas.height - 5;
+  const spacing = canvas.width / (numberOfLabels - 1);
+
+  ctx.save();
+  ctx.font = "12px Arial";
+  ctx.fillStyle = "#333";
+  ctx.textAlign = "center";
+
+  for (let i = 0; i < numberOfLabels; i++) {
+    const x = i * spacing;
+    const label = (i * interval).toFixed(1);
+    ctx.fillText(label, x, labelY);
+    ctx.beginPath();
+    ctx.moveTo(x, labelY - 5);
+    ctx.lineTo(x, labelY - 15);
+    ctx.strokeStyle = "#888";
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
   saveState(); // initial state
+  
+  
 </script>
 </body>
 </html>
