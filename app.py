@@ -747,6 +747,13 @@ def hue_to_note_name(hue):
 def brightness_to_octave(brightness):
     return int(3 + brightness * 3)
 
+def get_quickly_frequency_by_color(r, g, b):
+    target = [r, g, b]
+    for note, props in freq_symbols.items():
+        if props["color"] == target:
+            return props["frequency"]
+    return None  # or raise an error / return a default
+
 def color_to_frequency(r, g, b):
     h, s, v = rgb_to_hsv(r / 255, g / 255, b / 255)
     hue_deg = h * 360
@@ -776,19 +783,33 @@ def submit():
     width, height = img.size
     pixels = img.load()
 
-    # Build a map: x → list of (frequency at y)
-    timeline = {}
+    print(f"Received image size: {width}x{height}")
+
+    timeline = {}  # x coordinate -> list of frequencies
+    colors_found = set()
+
     for x in range(width):
         freqs = []
         for y in range(height):
             r, g, b, a = pixels[x, y]
-            if a > 10:  # ignore transparent / empty pixels
-                freq = color_to_frequency(r, g, b)
+            
+            freq=get_quickly_frequency_by_color(int(r),int(g),int(b))
+            if freq ==None:
+                if a > 10:  # ignore transparent pixels
+                    freq = get_frequency_from_color(r, g, b)
+                    if freq:
+                        freqs.append(freq)
+                        colors_found.add((r, g, b))
+            else:
                 freqs.append(freq)
         if freqs:
             timeline[x] = freqs
 
-    # Generate sound from left to right (time axis)
+    print(f"Colors detected (approx): {colors_found}")
+    if not timeline:
+        return jsonify({"error": "No valid colors detected"}), 400
+
+    # Generate audio: sum tones for each vertical slice, then concatenate horizontally
     audio_segments = [generate_tone(timeline[x]) for x in sorted(timeline.keys())]
     audio = np.concatenate(audio_segments)
     audio_int16 = np.int16(audio * 32767)
