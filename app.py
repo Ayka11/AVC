@@ -50,7 +50,7 @@ OUTPUT_DIR = "static/audio"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 SAMPLE_RATE = 44100
-DURATION_PER_STEP = 10/1000  # seconds per X step (column)
+DURATION_PER_STEP = 12/1000  # seconds per X step (column)
 
 NOTE_TO_SEMITONE = {
     'C': 0, 'C#': 1, 'D': 2, 'D#': 3,
