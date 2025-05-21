@@ -323,8 +323,8 @@
 
 
 function drawXAxisLabels() {
-  const totalSeconds = 10;
-  const interval = 0.5;
+  const totalSeconds = 60*5;
+  const interval = 30;
   const numberOfLabels = totalSeconds / interval + 1;
   const labelY = canvas.height - 5;
   const spacing = canvas.width / (numberOfLabels - 1);
