@@ -927,6 +927,18 @@ def color_to_frequency(r, g, b):
     midi_note = 12 + octave * 12 + NOTE_TO_SEMITONE[note_name]
     return 440 * 2 ** ((midi_note - 69) / 12)
 
+def get_frequency_from_color(r, g, b, threshold=10000):  # very high
+    closest_freq = None
+    closest_dist = float('inf')
+    for info in freq_symbols.values():
+        rgb = info.get("color")
+        if rgb:
+            dist = color_distance((r, g, b), tuple(rgb))
+            if dist < closest_dist:
+                closest_dist = dist
+                closest_freq = info["frequency"]
+    return closest_freq
+
 def generate_tone(frequencies, duration=DURATION_PER_STEP):
     t = np.linspace(0, duration, int(SAMPLE_RATE * duration), False)
     waveform = sum(np.sin(2 * np.pi * f * t) for f in frequencies)
