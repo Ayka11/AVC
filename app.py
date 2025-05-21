@@ -944,6 +944,9 @@ def generate_tone(frequencies, duration=DURATION_PER_STEP):
     waveform = sum(np.sin(2 * np.pi * f * t) for f in frequencies)
     waveform /= max(np.abs(waveform)) if np.max(np.abs(waveform)) != 0 else 1
     return waveform
+    
+def color_distance(c1, c2):
+    return sum((a - b) ** 2 for a, b in zip(c1, c2)) ** 0.5
 
 @app.route('/drawing2audio')
 def drawing2audio():
