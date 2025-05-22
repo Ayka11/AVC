@@ -941,9 +941,44 @@ def get_frequency_from_color(r, g, b, threshold=10000):  # very high
 
 def generate_tone(frequencies, duration=DURATION_PER_STEP):
     t = np.linspace(0, duration, int(SAMPLE_RATE * duration), False)
-    waveform = sum(np.sin(2 * np.pi * f * t) for f in frequencies)
-    waveform /= max(np.abs(waveform)) if np.max(np.abs(waveform)) != 0 else 1
+    
+    if not frequencies:
+        return np.zeros_like(t)
+    
+    # Convert frequencies to numpy array if it's a list
+    frequencies = np.array(frequencies)
+    
+    # Piano-like harmonics (frequency multipliers and their amplitudes)
+    harmonics = [
+        (1.00, 0.25),  # Fundamental
+        (2.00, 0.15),  # Octave
+        (3.00, 0.10),  # Perfect fifth + octave
+        (4.00, 0.05),  # Double octave
+        (5.00, 0.03)   # Major third + two octaves
+    ]
+    
+    # Generate waveform for each frequency with harmonics
+    waveform = np.zeros_like(t)
+    for freq in frequencies:
+        for harmonic, amplitude in harmonics:
+            waveform += amplitude * np.sin(2 * np.pi * freq * harmonic * t)
+    
+    # Apply piano-like envelope (quick attack, exponential decay)
+    envelope = np.ones_like(t)
+    attack_samples = int(0.01 * SAMPLE_RATE)  # 10ms attack
+    if attack_samples > 0:
+        envelope[:attack_samples] = np.linspace(0, 1, attack_samples)
+    envelope[attack_samples:] = np.exp(-5 * t[attack_samples:])
+    
+    waveform *= envelope
+    
+    # Normalize to prevent clipping
+    max_val = np.max(np.abs(waveform))
+    if max_val > 0:
+        waveform /= max_val
+    
     return waveform
+
     
 def color_distance(c1, c2):
     return sum((a - b) ** 2 for a, b in zip(c1, c2)) ** 0.5
