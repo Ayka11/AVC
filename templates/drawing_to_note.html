@@ -92,9 +92,16 @@
       }
 
       canvas {
-        height: 300px !important;
+        height: 500px !important;
       }
     }
+    /* Mobile – enable horizontal scroll */
+	@media (max-width: 768px) {
+	  #canvasContainer {
+		max-width: 100%;
+		overflow-x: auto;
+		overflow-y: hidden;
+	  }
   </style>
 </head>
 <body>
@@ -139,8 +146,9 @@
       <input type="color" id="colorPicker" value="#ff0000" />
     </div>
   </div>
-
+   <div id="canvasContainer">
   <canvas id="canvas" width="1000" height="500"></canvas>
+   </div>
   <span> Time (sec) </span>
   <div id="actionButtons">
     <button onclick="submitDrawing()">🎼 Submit Drawing</button>
