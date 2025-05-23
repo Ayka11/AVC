@@ -1025,9 +1025,20 @@ def submit():
         return jsonify({"error": "No valid colors detected"}), 400
 
     # Generate audio: sum tones for each vertical slice, then concatenate horizontally
-    audio_segments = [generate_tone(timeline[x]) for x in sorted(timeline.keys())]
+    #audio_segments = [generate_tone(timeline[x]) for x in sorted(timeline.keys())]
+    #audio = np.concatenate(audio_segments)
+    #audio_int16 = np.int16(audio * 32767)
+
+    audio_segments = []
+    for x in sorted(timeline.keys()):
+        segment = generate_tone(timeline[x])
+        segment = segment / np.max(np.abs(segment))  # Normalize per slice
+        audio_segments.append(segment)
+    
     audio = np.concatenate(audio_segments)
+    audio = audio / np.max(np.abs(audio))  # Final normalization
     audio_int16 = np.int16(audio * 32767)
+
 
     filename = f"sound_{int(time.time() * 1000)}.wav"
     filepath = os.path.join(OUTPUT_DIR, filename)
