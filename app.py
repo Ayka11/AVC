@@ -1055,7 +1055,7 @@ def submit():
 
     audio_segments = []
     for x in sorted(timeline.keys()):
-        segment = generate_tone(timeline[x])
+        segment = generate_tone(timeline[x],brush)
         segment = segment / np.max(np.abs(segment))  # Normalize per slice
         audio_segments.append(segment)
     
