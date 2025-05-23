@@ -91,7 +91,7 @@ z<!DOCTYPE html>
 <body>
   {% include 'navbar.html' %}
   <div id='bb'>
-  <h1>🎨 Color-to-Music Drawing</h1>
+  <h1>🎨 SynestheticSounds</h1>
 
   <div id="toolSections">
     <div class="tool-box">
@@ -118,13 +118,13 @@ z<!DOCTYPE html>
 
     <div class="tool-box">
       <div id="colorButtons">
-        <button style="background-color: #8b0000;" onclick="setColor('#8b0000')"></button>
-        <button style="background-color: #ff4500;" onclick="setColor('#ff4500')"></button>
-        <button style="background-color: #cccc00;" onclick="setColor('#cccc00')"></button>
-        <button style="background-color: #006400;" onclick="setColor('#006400')"></button>
-        <button style="background-color: #00008b;" onclick="setColor('#00008b')"></button>
-        <button style="background-color: #9400d3;" onclick="setColor('#9400d3')"></button>
-        <button style="background-color: #003245;" onclick="setColor('#003245')"></button>
+        <button style="background-color: #80e000;" onclick="setColor('#80e000')"></button>
+        <button style="background-color: #006073;" onclick="setColor('#006073')"></button>
+        <button style="background-color: #9f1aec;" onclick="setColor('#9f1aec')"></button>
+        <button style="background-color: #d91a80;" onclick="setColor('#d91a80')"></button>
+        <button style="background-color: #f95500;" onclick="setColor('#f95500')"></button>
+        <button style="background-color: #ffff33;" onclick="setColor('#ffff33')"></button>
+        <button style="background-color: #99ff33;" onclick="setColor('#99ff33')"></button>
       </div>
       Color Picker:
       <input type="color" id="colorPicker" value="#ff0000" />
@@ -315,7 +315,7 @@ z<!DOCTYPE html>
 
 
 function drawXAxisLabels() {
-  const totalSeconds = 60*2;
+  const totalSeconds = 60;
   const interval = 5;
   const numberOfLabels = totalSeconds / interval + 1;
   const labelY = canvas.height - 5;
