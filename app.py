@@ -976,7 +976,7 @@ def generate_tone(frequencies,brush, duration=DURATION_PER_STEP):
             elif brush == "star":
                 tone = np.sin(2 * np.pi * freq * harmonic*t) + 0.5 * np.sin(2 * np.pi * freq * 2 * harmonic* t)
             elif brush == "Cross":
-                tone = np.sin(2 * np.pi * freq * harmonic t) + 0.3 * np.sin(2 * np.pi * (freq + 20) * harmonic* t)
+                tone = np.sin(2 * np.pi * freq * harmonic*t) + 0.3 * np.sin(2 * np.pi * (freq + 20) * harmonic* t)
             elif brush == "square":
                 tone = signal.square(2 * np.pi * freq * harmonic* t)
             elif brush == "Triangle":
