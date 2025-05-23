@@ -45,7 +45,6 @@ global session
 
 import numpy as np
 from numpy.random import uniform
-import sounddevice as sd
 from scipy import signal
 
 
