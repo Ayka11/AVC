@@ -939,7 +939,7 @@ def get_frequency_from_color(r, g, b, threshold=10000):  # very high
                 closest_freq = info["frequency"]
     return closest_freq
 
-def generate_tone(frequencies, duration=DURATION_PER_STEP):
+def generate_tone(frequencies,brush, duration=DURATION_PER_STEP):
     t = np.linspace(0, duration, int(SAMPLE_RATE * duration), False)
     
     if not frequencies:
@@ -961,7 +961,25 @@ def generate_tone(frequencies, duration=DURATION_PER_STEP):
     waveform = np.zeros_like(t)
     for freq in frequencies:
         for harmonic, amplitude in harmonics:
-            waveform += amplitude * np.sin(2 * np.pi * freq * harmonic * t)
+            # Generate base waveform
+            if brush == "spray":
+                # Smooth frequency modulation for Spray
+                mod_freq = freq + 40 * np.sin(2 * np.pi * 5 * harmonic* t)  # 5 Hz modulation
+                tone = np.sin(2 * np.pi * mod_freq * t)
+            elif brush == "star":
+                tone = np.sin(2 * np.pi * freq * harmonic*t) + 0.5 * np.sin(2 * np.pi * freq * 2 * harmonic* t)
+            elif brush == "Cross":
+                tone = np.sin(2 * np.pi * freq * harmonic t) + 0.3 * np.sin(2 * np.pi * (freq + 20) * harmonic* t)
+            elif brush == "square":
+                tone = signal.square(2 * np.pi * freq * harmonic* t)
+            elif brush == "Triangle":
+                tone = signal.sawtooth(2 * np.pi * freq * t* harmonic, width=0.5)
+            elif brush == "sawtooth":
+                tone = signal.sawtooth(2 * np.pi * freq* harmonic * t)
+            else:  # Default: Round (sine wave)
+                tone = np.sin(2 * np.pi * freq* harmonic * t)
+                
+            waveform += amplitude * tone
     
     # Apply piano-like envelope (quick attack, exponential decay)
     envelope = np.ones_like(t)
@@ -993,6 +1011,7 @@ def submit():
     if 'image' not in data:
         return jsonify({"error": "No image provided"}), 400
 
+    brush = data.get('brush', 'unknown')
     image_data = data['image'].split(',')[1]
     img = Image.open(BytesIO(base64.b64decode(image_data))).convert('RGBA')
     width, height = img.size
@@ -1025,7 +1044,7 @@ def submit():
         return jsonify({"error": "No valid colors detected"}), 400
 
     # Generate audio: sum tones for each vertical slice, then concatenate horizontally
-    #audio_segments = [generate_tone(timeline[x]) for x in sorted(timeline.keys())]
+    #audio_segments = [generate_tone(timeline[x],brush) for x in sorted(timeline.keys())]
     #audio = np.concatenate(audio_segments)
     #audio_int16 = np.int16(audio * 32767)
 
