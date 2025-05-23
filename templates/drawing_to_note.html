@@ -299,10 +299,11 @@ z<!DOCTYPE html>
 
   async function submitDrawing() {
     const dataURL = canvas.toDataURL("image/png");
+    const brush = document.getElementById('toolSelect').value;
     const res = await fetch('/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image: dataURL })
+      body: JSON.stringify({ image: dataURL,brush:brush })
     });
     const data = await res.json();
     player.src = data.url + '?t=' + new Date().getTime();
