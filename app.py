@@ -1018,7 +1018,7 @@ def submit():
             else:
                 freqs.append(freq)
         if freqs:
-            timeline[x] = freqs
+            timeline[x] = list(np.unique(freqs))
 
     print(f"Colors detected (approx): {colors_found}")
     if not timeline:
