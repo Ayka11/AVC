@@ -42,6 +42,13 @@ from dash import Dash, dcc, html, callback, Input, Output
 import plotly.graph_objs as go
 import plotly.express as px
 global session
+
+import numpy as np
+from numpy.random import uniform
+import sounddevice as sd
+from scipy import signal
+
+
 app = Flask(__name__)
 app.secret_key = 'Lantop2333'  # Set a secret key session
 
