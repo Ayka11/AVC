@@ -91,7 +91,11 @@ z<!DOCTYPE html>
 <body>
   {% include 'navbar.html' %}
   <div id='bb'>
-  <h1>🎨 SynestheticSounds</h1>
+  <h1>
+  <img src="{{ url_for('static', filename='logo.png') }}" alt="SynestheticSounds Logo" style="height: 50px; vertical-align: middle;">
+  SynestheticSounds
+  </h1>
+
 
   <div id="toolSections">
     <div class="tool-box">
