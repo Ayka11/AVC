@@ -937,6 +937,10 @@ def get_frequency_from_color(r, g, b, threshold=10000):  # very high
     closest_dist = float('inf')
     for info in freq_symbols.values():
         rgb = info.get("color")
+        if tuple(rgb)==(r,g,b):
+            closest_freq = info["frequency"]
+            return closest_freq
+        
         if rgb:
             dist = color_distance((r, g, b), tuple(rgb))
             if dist < closest_dist:
@@ -1032,15 +1036,19 @@ def submit():
         for y in range(height):
             r, g, b, a = pixels[x, y]
             
-            freq=get_quickly_frequency_by_color(int(r),int(g),int(b))
-            if freq ==None:
-                if a > 10:  # ignore transparent pixels
+            
+            
+            if not(r ==0 and g==0 and b==0):
+                if r==g and g==b:
+                    continue
+                freq=get_quickly_frequency_by_color(int(r),int(g),int(b))
+                print(r,g,b,a)
+                if a > 200:  # ignore transparent pixels
                     freq = get_frequency_from_color(r, g, b)
                     if freq:
                         freqs.append(freq)
                         colors_found.add((r, g, b))
-            else:
-                freqs.append(freq)
+          
         if freqs:
             timeline[x] = list(np.unique(freqs))
 
@@ -1055,6 +1063,8 @@ def submit():
 
     audio_segments = []
     for x in sorted(timeline.keys()):
+    
+        print('brush',brush,timeline[x])
         segment = generate_tone(timeline[x],brush)
         segment = segment / np.max(np.abs(segment))  # Normalize per slice
         audio_segments.append(segment)
@@ -1076,4 +1086,5 @@ def serve_audio(filename):
 
 if __name__ == '__main__':
      app.run(debug=True,host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
+
 
