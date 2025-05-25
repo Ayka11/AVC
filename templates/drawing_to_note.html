@@ -85,6 +85,28 @@
       border-radius: 8px;
       background-color: #eee;
     }
+
+     #infoBox {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+  }
+  #infoContent {
+    display: none;
+    background: #fff;
+    color: #000;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 280px;
+    font-size: 12px;
+    line-height: 1.4;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    border-radius: 8px;
+  }
+  #infoBox:hover #infoContent {
+    display: block;
+  }
   </style>
 </head>
 <body>
@@ -163,14 +185,19 @@
       <input type="color" id="colorPicker" value="#ff0000" />
     </div>
   </div>
-	  
-  <div id="infoBox">
-  <div id="infoContent" style="font-size:11px;">
-    • Color = Note & Frequency:</b> Each color maps to a musical note.
-    • Brush Type = Blend:</b> Different brushes alter the frequency.
-    • Canvas Area = Sound Weight:</b> More color = stronger sound.
+
+<div id="infoBox">
+  <span style="cursor: pointer;">ℹ️</span>
+  <div id="infoContent">
+    <strong>🎨 How to Use This App</strong><br><br>
+<p> </p>This is a creative painting application that not only lets you draw with various artistic brushes, 
+but also generates sound based on the colors and shapes you use. It's a unique way to visualize 
+and sonify your creativity.This is a creative painting application that not only lets you draw with various artistic brushes, 
+but also generates sound based on the colors and shapes you use. It's a unique way to visualize 
+and sonify your creativity. </p>
   </div>
 </div>
+	  
    <div id="canvasContainer">
   <canvas id="canvas" width="1000" height="500"></canvas>
    </div>
