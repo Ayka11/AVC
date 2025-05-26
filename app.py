@@ -967,6 +967,12 @@ def generate_tone(frequencies, brush, duration=DURATION_PER_STEP):
     
     # Phase-based waveform generation (anti-aliased)
     phase = 2 * np.pi * np.cumsum(frequencies.mean() * np.ones_like(t)) / SAMPLE_RATE
+    harmonics = [
+            (1, 0.6),   # Fundamental
+            (2, 0.4),   # Octave
+            (3, 0.3),   # Perfect fifth
+            (5, 0.2)    # Major third
+        ]
     
     if brush.lower() == "spray":
         # FM synthesis with harmonic ratio modulation
