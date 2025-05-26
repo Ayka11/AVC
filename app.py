@@ -948,51 +948,87 @@ def get_frequency_from_color(r, g, b, threshold=10000):  # very high
                 closest_freq = info["frequency"]
     return closest_freq
 
-def generate_tone(frequencies,brush, duration=DURATION_PER_STEP):
-    t = np.linspace(0, duration, int(SAMPLE_RATE * duration), False)
+
+def generate_tone(frequencies, brush, duration=DURATION_PER_STEP):
+    # Validate brush type first
+    valid_brushes = {"spray", "star", "cross", "square", "triangle", "sawtooth", "round"}
+    if brush.lower() not in valid_brushes:
+        raise ValueError(f"Invalid brush type: {brush}. Valid options are {valid_brushes}")
     
-    if not frequencies:
+    t = np.linspace(0, duration, int(SAMPLE_RATE * duration), False)
+    waveform = np.zeros_like(t)
+    
+    # Parameter validation
+    if not isinstance(frequencies, (list, np.ndarray)) or len(frequencies) == 0:
         return np.zeros_like(t)
     
-    # Convert frequencies to numpy array if it's a list
-    frequencies = np.array(frequencies)
+    frequencies = np.clip(frequencies, 20, 20000)  # Audible range
     
-    # Piano-like harmonics (frequency multipliers and their amplitudes)
-    harmonics = [
-        (1.00, 0.25),  # Fundamental
-        (2.00, 0.15),  # Octave
-        (3.00, 0.10),  # Perfect fifth + octave
-        (4.00, 0.05),  # Double octave
-        (5.00, 0.03)   # Major third + two octaves
-    ]
+    # Phase-based waveform generation (anti-aliased)
+    phase = 2 * np.pi * np.cumsum(frequencies.mean() * np.ones_like(t)) / SAMPLE_RATE
     
-    # Generate waveform for each frequency with harmonics
-    waveform = np.zeros_like(t)
-    for freq in frequencies:
-        for harmonic, amplitude in harmonics:
-            # Generate base waveform
-            if brush == "spray":
-                # Smooth frequency modulation for Spray
-                mod_freq = freq + 40 * np.sin(2 * np.pi * 5 * harmonic* t)  # 5 Hz modulation
-                tone = np.sin(2 * np.pi * mod_freq * t)
-            elif brush == "star":
-                tone = np.sin(2 * np.pi * freq * harmonic*t) + 0.5 * np.sin(2 * np.pi * freq * 2 * harmonic* t)
-            elif brush == "Cross":
-                tone = np.sin(2 * np.pi * freq * harmonic*t) + 0.3 * np.sin(2 * np.pi * (freq + 20) * harmonic* t)
-            elif brush == "square":
-                tone = signal.square(2 * np.pi * freq * harmonic* t)
-            elif brush == "Triangle":
-                tone = signal.sawtooth(2 * np.pi * freq * t* harmonic, width=0.5)
-            elif brush == "sawtooth":
-                tone = signal.sawtooth(2 * np.pi * freq* harmonic * t)
-            else:  # Default: Round (sine wave)
-                tone = np.sin(2 * np.pi * freq* harmonic * t)
-                
-            waveform += amplitude * tone
+    if brush.lower() == "spray":
+        # FM synthesis with harmonic ratio modulation
+        mod_ratio = 1.7 + 0.3 * np.sin(2 * np.pi * 0.2 * t)
+        carrier = np.sin(phase + 3 * np.sin(mod_ratio * phase))
+        tone = carrier * (0.6 + 0.4 * np.sin(2 * np.pi * 5 * t))
+        
+        # Add filtered noise layer
+        noise = 0.15 * np.random.normal(0, 1, len(t))
+        noise = signal.lfilter(*signal.butter(4, 1000/(SAMPLE_RATE/2)), noise)
+        tone = tone * (0.7 + 0.3 * np.sin(2 * np.pi * 3 * t)) + noise
     
+    elif brush.lower() == "star":
+        # Additive synthesis with harmonic series
+        harmonics = [
+            (1, 0.6),   # Fundamental
+            (2, 0.4),   # Octave
+            (3, 0.3),   # Perfect fifth
+            (5, 0.2)    # Major third
+        ]
+        tone = sum(np.sin(h * phase) * amp for h, amp in harmonics)
+        
+        # Gentle detuning
+        detune = 1 + 0.001 * np.sin(2 * np.pi * 0.1 * t)
+        tone = tone * detune
+    
+    elif brush.lower() == "cross":
+        # Phase distortion synthesis
+        distorted_phase = phase + 0.8 * np.sin(phase)
+        tone = np.sin(distorted_phase) * np.sin(2 * distorted_phase)
+    
+    elif brush.lower() == "rectangule":
+        # Pulse width modulation
+        pw = 0.5 + 0.3 * np.sin(2 * np.pi * 0.5 * t)
+        tone = signal.square(phase, duty=pw)
+    
+    elif brush.lower() == "triangle":
+        # Band-limited triangle with even harmonics
+        tone = signal.sawtooth(phase, width=0.5)
+        tone -= 0.25 * signal.sawtooth(2 * phase, width=0.5)
+    
+    elif brush.lower() == "sawtooth":
+        # Supersaw-style detuned oscillators
+        detune = [0.99, 1.0, 1.01]
+        tone = sum(0.4 * np.sin(2 * np.pi * d * frequencies.mean() * t) for d in detune)
+    
+    elif brush.lower() == "circle":
+        # Subtle vibrato and harmonics
+        vibrato = 0.1 * np.sin(2 * np.pi * 6 * t)  # Reduced from 0.3
+        tone = 0.9 * np.sin(phase + vibrato) + 0.1 * np.sin(3 * phase)  # 90/10 balance
+    
+    else:
+        raise ValueError(f"Invalid brush type: {brush}. Valid options are {valid_brushes}")
+    
+    # Normalize to prevent clipping
+    tone = 0.8 * tone / (np.max(np.abs(tone)) + 1e-9)
+    for harmonic, amplitude in harmonics:
+        waveform += amplitude * tone
+        
     # Apply piano-like envelope (quick attack, exponential decay)
     envelope = np.ones_like(t)
     attack_samples = int(0.01 * SAMPLE_RATE)  # 10ms attack
+    
     if attack_samples > 0:
         envelope[:attack_samples] = np.linspace(0, 1, attack_samples)
     envelope[attack_samples:] = np.exp(-5 * t[attack_samples:])
