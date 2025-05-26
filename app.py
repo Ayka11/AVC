@@ -951,7 +951,7 @@ def get_frequency_from_color(r, g, b, threshold=10000):  # very high
 
 def generate_tone(frequencies, brush, duration=DURATION_PER_STEP):
     # Validate brush type first
-    valid_brushes = {"spray", "star", "cross", "square", "triangle", "sawtooth", "round"}
+    valid_brushes = {"spray", "star", "cross", "square", "rectangle", "triangle", "sawtooth", "round","line"}
     if brush.lower() not in valid_brushes:
         raise ValueError(f"Invalid brush type: {brush}. Valid options are {valid_brushes}")
     
@@ -997,7 +997,7 @@ def generate_tone(frequencies, brush, duration=DURATION_PER_STEP):
         distorted_phase = phase + 0.8 * np.sin(phase)
         tone = np.sin(distorted_phase) * np.sin(2 * distorted_phase)
     
-    elif brush.lower() == "rectangule":
+    elif brush.lower() == "square":
         # Pulse width modulation
         pw = 0.5 + 0.3 * np.sin(2 * np.pi * 0.5 * t)
         tone = signal.square(phase, duty=pw)
@@ -1012,7 +1012,7 @@ def generate_tone(frequencies, brush, duration=DURATION_PER_STEP):
         detune = [0.99, 1.0, 1.01]
         tone = sum(0.4 * np.sin(2 * np.pi * d * frequencies.mean() * t) for d in detune)
     
-    elif brush.lower() == "circle":
+    elif brush.lower() == "round":
         # Subtle vibrato and harmonics
         vibrato = 0.1 * np.sin(2 * np.pi * 6 * t)  # Reduced from 0.3
         tone = 0.9 * np.sin(phase + vibrato) + 0.1 * np.sin(3 * phase)  # 90/10 balance
