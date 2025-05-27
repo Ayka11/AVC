@@ -952,12 +952,11 @@ def get_frequency_from_color(r, g, b, threshold=10000):  # very high
 
 def generate_tone(frequencies, brush, duration=DURATION_PER_STEP):
     # Validate brush type first
-    valid_brushes = {"spray", "star", "cross", "square", "rectangle", "triangle", "sawtooth", "round","line"}
+    valid_brushes = {"spray", "star", "cross", "square", "triangle", "sawtooth", "round","line"}
     if brush.lower() not in valid_brushes:
         raise ValueError(f"Invalid brush type: {brush}. Valid options are {valid_brushes}")
     
     t = np.linspace(0, duration, int(SAMPLE_RATE * duration), False)
-    waveform = np.zeros_like(t)
     
     # Parameter validation
     if not isinstance(frequencies, (list, np.ndarray)) or len(frequencies) == 0:
@@ -967,12 +966,6 @@ def generate_tone(frequencies, brush, duration=DURATION_PER_STEP):
     
     # Phase-based waveform generation (anti-aliased)
     phase = 2 * np.pi * np.cumsum(frequencies.mean() * np.ones_like(t)) / SAMPLE_RATE
-    harmonics = [
-            (1, 0.6),   # Fundamental
-            (2, 0.4),   # Octave
-            (3, 0.3),   # Perfect fifth
-            (5, 0.2)    # Major third
-        ]
     
     if brush.lower() == "spray":
         # FM synthesis with harmonic ratio modulation
@@ -1029,25 +1022,8 @@ def generate_tone(frequencies, brush, duration=DURATION_PER_STEP):
     
     # Normalize to prevent clipping
     tone = 0.8 * tone / (np.max(np.abs(tone)) + 1e-9)
-    for harmonic, amplitude in harmonics:
-        waveform += amplitude * tone
-        
-    # Apply piano-like envelope (quick attack, exponential decay)
-    envelope = np.ones_like(t)
-    attack_samples = int(0.01 * SAMPLE_RATE)  # 10ms attack
     
-    if attack_samples > 0:
-        envelope[:attack_samples] = np.linspace(0, 1, attack_samples)
-    envelope[attack_samples:] = np.exp(-5 * t[attack_samples:])
-    
-    waveform *= envelope
-    
-    # Normalize to prevent clipping
-    max_val = np.max(np.abs(waveform))
-    if max_val > 0:
-        waveform /= max_val
-    
-    return waveform
+    return tone
 
     
 def color_distance(c1, c2):
