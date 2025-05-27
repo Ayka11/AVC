@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 import random
 import matplotlib.pyplot as plt
 import imageio
-import imageio.v2 as iio
+import imageio as iio
 import os
 
 import numpy as np
