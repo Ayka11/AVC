@@ -126,17 +126,21 @@
       <button onclick="clearCanvas()">🗑️ Clear</button>
     </div>
 
-    <div class="tool-box">
-      <label>Brush Size: <br>
-        <input type="range" id="brushSizeSlider" min="1" max="100" value="5" />
+    <div class="tool-box"title="Multiple Brush Shapes | Affects waveform harmonics">
+      <label title="Adjustable Brush Size (4px to 64px) controls amplitude">
+                Brush Size: <br>
+        <input type="range" id="brushSizeSlider" min="4" max="64" value="16" />
       </label>
       <label>Brush Type: <br>
         <select id="toolSelect">
-          <option value="square">Rectangle</option>
-          <option value="line">Free</option>
-          <option value="round">Circle</option>
-          <option value="star">Star</option>
-          <option value="spray">Spray</option>
+		<option value="line" title="Basic sawtooth wave">Line</option>
+		<option value="square" title="Square wave with strong harmonics">Square</option>
+		<option value="cross" title="Complex FM synthesis tones">Cross</option> 
+		<option value="round" title="Smooth sine wave tones">Round</option>
+		<option value="star" title="Bell-like harmonic overtones">Star</option>
+		<option value="spray" title="Noise-based texture sounds">Spray</option>
+		<option value="triangle" title="Clean triangle wave">Triangle</option>
+		<option value="sawtooth" title="Rich harmonic content">Sawtooth</option>
         </select>
       </label>
     </div>
@@ -190,20 +194,24 @@
   <span style="cursor: pointer;">ℹ️</span>
   <div id="infoContent">
     <strong>🎨 How to Use This App</strong><br><br>
-<p> This is a creative painting application that not only lets you draw with various artistic brushes, 
-but also generates sound based on the colors and shapes you use. It's a unique way to visualize 
-and sonify your creativity.This is a creative painting application that not only lets you draw with various artistic brushes, 
-but also generates sound based on the colors and shapes you use. It's a unique way to visualize 
-and sonify your creativity. </p>
-  </div>
+	  <ul class="list-unstyled">
+		  <li><b>🎨 Color = Note & Frequency:</b> Each color corresponds to a specific musical note and its frequency. Try different hues to hear different pitches.</li>
+		  <li><b>🖌️ Brush Type = Blend:</b> The brush type controls how tones blend. Choose shapes like round, triangle, or sawtooth to alter the sound character.</li>
+		  <li><b>🖼️ Canvas Area = Sound Weight:</b> The more you paint with a specific color, the louder and more prominent that note becomes in the final mix.</li>
+		  <li><b>▶️ Submit Drawing:</b> Click this to generate and play back your audio composition based on your visual artwork.</li>
+	  </ul>
+    <p class="mb-0 text-muted" style="font-size: 0.85em;">Tip: Mix brush types and colors to compose rich soundscapes visually!</p>
+</div>
+    
 </div>
  
- <div style="font-size:11px;padding:10px">
-    • <b> Color = Note & Frequency:</b> Each color maps to a musical note.
-    • <b> Brush Type = Blend:</b> Different brushes alter the frequency.
-    • <b>Canvas Area = Sound Weight: </b> More color = stronger sound.
-    • <b>Submit Drawing button: </b> To listen to your artwork.
- </div>
+ <div style="font-size:14px;padding:10px">
+	 <p> SynestheticSounds is a creative painting application that not only lets you draw with various artistic brushes, 
+but also generates sound based on the colors and shapes you use. It's a unique way to visualize and sonify your creativity.
+This is a creative painting application that not only lets you draw with various artistic brushes, 
+but also generates sound based on the colors and shapes you use. It's a unique way to visualize 
+and sonify your creativity. </p>
+	  </div>
    <div id="canvasContainer">
   <canvas id="canvas" width="1000" height="500"></canvas>
    </div>
