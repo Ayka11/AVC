@@ -132,7 +132,7 @@
         <input type="range" id="brushSizeSlider" min="4" max="64" value="16" />
       </label>
       <label>Brush Type: <br>
-        <select id="toolSelect">
+        <select id="toolSelect" data-bs-toggle="tooltip" title="Select a waveform shape to affect how sound is blended.">
 		<option value="line" title="Basic sawtooth wave">Line</option>
 		<option value="square" title="Square wave with strong harmonics">Square</option>
 		<option value="cross" title="Complex FM synthesis tones">Cross</option> 
@@ -186,7 +186,7 @@
 	</div>
       </div>
       Color Picker:
-      <input type="color" id="colorPicker" value="#ff0000" />
+      <input type="color" id="colorPicker" value="#ff0000" data-bs-toggle="tooltip" title="Pick a color to assign a musical note." />
     </div>
   </div>
 
@@ -217,14 +217,14 @@ and sonify your creativity. </p>
    </div>
   <span> Time (sec) </span>
   <div id="actionButtons">
-    <button onclick="submitDrawing()">🎼 Submit Drawing</button>
-    <button onclick="downloadAudio()">🔊 Download Audio</button>
+    <button onclick="submitDrawing()" data-bs-toggle="tooltip" title="Click to generate sound from your drawing.">🎼 Submit Drawing</button>
+    <button onclick="downloadAudio()" data-bs-toggle="tooltip" title="Save your generated audio as a WAV file.">🔊 Download Audio</button>
   </div>
 
   <br />
   <audio id="player" controls></audio>
 </div>
-<script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js">
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
   const colorPicker = document.getElementById('colorPicker');
@@ -425,7 +425,19 @@ function drawXAxisLabels() {
 
   saveState(); // initial state
   
-  
+// Show onboarding modal on first visit
+window.addEventListener('DOMContentLoaded', () => {
+  const seenModal = localStorage.getItem('seenOnboarding');
+  if (!seenModal) {
+    const modal = new bootstrap.Modal(document.getElementById('onboardingModal'));
+    modal.show();
+    localStorage.setItem('seenOnboarding', 'true');
+  }
+
+  // Activate Bootstrap tooltips
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.map(t => new bootstrap.Tooltip(t));
+});
 </script>
 </body>
 </html>
