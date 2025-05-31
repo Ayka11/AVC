@@ -114,7 +114,7 @@
   <div id='bb'>
   <h1>
   <img src="{{ url_for('static',  filename='logo2.png') }}" alt="SynestheticSounds Logo" style="height: 50px; vertical-align: middle;">
-  SynestheticSounds
+  Welcome to Synesthetic Sounds
   </h1>
 
 
@@ -439,5 +439,36 @@ window.addEventListener('DOMContentLoaded', () => {
   tooltipTriggerList.map(t => new bootstrap.Tooltip(t));
 });
 </script>
+	<!-- Onboarding Modal -->
+<div class="modal fade" id="onboardingModal" tabindex="-1" aria-labelledby="onboardingLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content rounded-4 shadow-lg">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="onboardingLabel">🎶 Welcome to SynestheticSounds</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ol class="list-group list-group-numbered">
+          <li class="list-group-item">
+            <strong>Pick a Color:</strong> Each color represents a musical note. Choose one from the palette.
+          </li>
+          <li class="list-group-item">
+            <strong>Select a Brush:</strong> Change how the sound blends using different waveforms (round, sawtooth, triangle).
+          </li>
+          <li class="list-group-item">
+            <strong>Start Drawing:</strong> The more color you add, the louder that note will sound.
+          </li>
+          <li class="list-group-item">
+            <strong>Submit Drawing:</strong> Click the play button to hear your artwork come alive!
+          </li>
+        </ol>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Let's Get Started!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
