@@ -951,54 +951,115 @@ def get_frequency_from_color(r, g, b, threshold=10000):  # very high
 
 
 def generate_tone(frequencies, brush, duration=DURATION_PER_STEP):
-    t = np.linspace(0, duration, int(SAMPLE_RATE * duration), False)
+    # Validate brush type first
+    valid_brushes = {"spray", "star", "cross", "square", "triangle", "sawtooth", "round","line"}
+    if brush.lower() not in valid_brushes:
+        raise ValueError(f"Invalid brush type: {brush}. Valid options are {valid_brushes}")
     
+
+    t = np.linspace(0, duration, int(SAMPLE_RATE * duration), False)
+        # Parameter validation
+    if not isinstance(frequencies, (list, np.ndarray)) or len(frequencies) == 0:
+        return np.zeros_like(t)
+
     if not frequencies:
         return np.zeros_like(t)
+    frequencies = np.clip(frequencies, 20, 20000)  # Audible range
     
-    frequencies = np.array(frequencies)
+    # Phase-based waveform generation (anti-aliased)
+    phase = 2 * np.pi * np.cumsum(frequencies.mean() * np.ones_like(t)) / SAMPLE_RATE
+    
+
+   # frequencies = np.array(frequencies)
     
     waveform = np.zeros_like(t)
 
     for freq in frequencies:
         if brush.lower() == "spray":
+                    # FM synthesis with harmonic ratio modulation
+        mod_ratio = 1.7 + 0.3 * np.sin(2 * np.pi * 0.2 * t)
+        carrier = np.sin(phase + 3 * np.sin(mod_ratio * phase))
+        tone = carrier * (0.6 + 0.4 * np.sin(2 * np.pi * 5 * t))
+        
+        # Add filtered noise layer
+        noise = 0.15 * np.random.normal(0, 1, len(t))
+        noise = signal.lfilter(*signal.butter(4, 1000/(SAMPLE_RATE/2)), noise)
+        tone = tone * (0.7 + 0.3 * np.sin(2 * np.pi * 3 * t)) + noise
+
             # Smooth frequency + amplitude modulation
-            mod_freq = freq + 40 * np.sin(2 * np.pi * 6 * t)
-            amp_mod = 0.8 + 0.2 * np.sin(2 * np.pi * 3 * t)
-            tone = np.sin(2 * np.pi * mod_freq * t) * amp_mod
+           # mod_freq = freq + 40 * np.sin(2 * np.pi * 6 * t)
+            # amp_mod = 0.8 + 0.2 * np.sin(2 * np.pi * 3 * t)
+           # tone = np.sin(2 * np.pi * mod_freq * t) * amp_mod
 
         elif brush.lower() == "star":
+        # Additive synthesis with harmonic series
+        harmonics = [
+            (1, 0.6),   # Fundamental
+            (2, 0.4),   # Octave
+            (3, 0.3),   # Perfect fifth
+            (5, 0.2)    # Major third
+        ]
+        tone = sum(np.sin(h * phase) * amp for h, amp in harmonics)
+        
+        # Gentle detuning
+        detune = 1 + 0.001 * np.sin(2 * np.pi * 0.1 * t)
+        tone = tone * detune
+
             # Musical interval: root + octave + major third (harmonic stack)
-            tone = (
-                0.5 * np.sin(2 * np.pi * freq * t) +
-                0.3 * np.sin(2 * np.pi * freq * 2 * t) +
-                0.2 * np.sin(2 * np.pi * freq * 2.5 * t)  # Major third above octave
-            )
+         #   tone = (
+          #      0.5 * np.sin(2 * np.pi * freq * t) +
+           #     0.3 * np.sin(2 * np.pi * freq * 2 * t) +
+            #    0.2 * np.sin(2 * np.pi * freq * 2.5 * t)  # Major third above octave
+            # )
 
         elif brush.lower() == "cross":
+            # Phase distortion synthesis
+        distorted_phase = phase + 0.8 * np.sin(phase)
+        tone = np.sin(distorted_phase) * np.sin(2 * distorted_phase)
+
             # Chorus-like detuning effect
-            tone = (
-                0.6 * np.sin(2 * np.pi * freq * t) +
-                0.4 * np.sin(2 * np.pi * (freq + 6) * t)
-            )
+            #tone = (
+            #    0.6 * np.sin(2 * np.pi * freq * t) +
+            #    0.4 * np.sin(2 * np.pi * (freq + 6) * t)
+            #)
 
         elif brush.lower() == "square":
+                # Pulse width modulation
+        pw = 0.5 + 0.3 * np.sin(2 * np.pi * 0.5 * t)
+        tone = signal.square(phase, duty=pw)
+
             # Rich odd harmonics for a warm square tone
-            tone = signal.square(2 * np.pi * freq * t)
-            tone += 0.3 * np.sin(3 * 2 * np.pi * freq * t)
-            tone += 0.2 * np.sin(5 * 2 * np.pi * freq * t)
+           # tone = signal.square(2 * np.pi * freq * t)
+            # tone += 0.3 * np.sin(3 * 2 * np.pi * freq * t)
+            # tone += 0.2 * np.sin(5 * 2 * np.pi * freq * t)
 
         elif brush.lower() == "triangle":
+                # Band-limited triangle with even harmonics
+        tone = signal.sawtooth(phase, width=0.5)
+        tone -= 0.25 * signal.sawtooth(2 * phase, width=0.5)
+
             # Soft odd harmonics — smooth and mellow
-            tone = signal.sawtooth(2 * np.pi * freq * t, width=0.5)
-            tone += 0.2 * np.sin(3 * 2 * np.pi * freq * t)
+           # tone = signal.sawtooth(2 * np.pi * freq * t, width=0.5)
+            # tone += 0.2 * np.sin(3 * 2 * np.pi * freq * t)
 
         elif brush.lower() == "sawtooth":
-            # Full harmonic spectrum, shaped by envelope
-            tone = signal.sawtooth(2 * np.pi * freq * t)
+        # Supersaw-style detuned oscillators
+        detune = [0.99, 1.0, 1.01]
+        tone = sum(0.4 * np.sin(2 * np.pi * d * frequencies.mean() * t) for d in detune)
+    
 
-        else:  # Default "Round" - sine wave
-            tone = np.sin(2 * np.pi * freq * t)
+            # Full harmonic spectrum, shaped by envelope
+          #  tone = signal.sawtooth(2 * np.pi * freq * t)
+
+        else:  # Default "round" - sine wave
+            # Subtle vibrato and harmonics
+        vibrato = 0.1 * np.sin(2 * np.pi * 6 * t)  # Reduced from 0.3
+        tone = 0.9 * np.sin(phase + vibrato) + 0.1 * np.sin(3 * phase)  # 90/10 balance
+
+           # tone = np.sin(2 * np.pi * freq * t)
+    else:
+        raise ValueError(f"Invalid brush type: {brush}. Valid options are {valid_brushes}")
+    
 
         waveform += tone
 
@@ -1011,12 +1072,16 @@ def generate_tone(frequencies, brush, duration=DURATION_PER_STEP):
 
     waveform *= envelope
 
+    # Normalize to prevent clipping
+    tone = 0.8 * tone / (np.max(np.abs(tone)) + 1e-9)
+
     # Normalize to avoid clipping
     max_val = np.max(np.abs(waveform))
     if max_val > 0:
         waveform /= max_val
 
-    return waveform
+    return tone
+   # return waveform
 
     
 def color_distance(c1, c2):
