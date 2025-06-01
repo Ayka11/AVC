@@ -1,6 +1,5 @@
 import librosa
 import numpy as np
-import sounddevice as sd
 import queue
 import os
 import subprocess
