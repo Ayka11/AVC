@@ -974,9 +974,9 @@ def generate_tone(frequencies, brush, duration=DURATION_PER_STEP):
     
     waveform = np.zeros_like(t)
 
-    for freq in frequencies:
-        if brush.lower() == "spray":
-                    # FM synthesis with harmonic ratio modulation
+for freq in frequencies:
+    if brush.lower() == "spray":
+        # FM synthesis with harmonic ratio modulation
         mod_ratio = 1.7 + 0.3 * np.sin(2 * np.pi * 0.2 * t)
         carrier = np.sin(phase + 3 * np.sin(mod_ratio * phase))
         tone = carrier * (0.6 + 0.4 * np.sin(2 * np.pi * 5 * t))
@@ -985,7 +985,6 @@ def generate_tone(frequencies, brush, duration=DURATION_PER_STEP):
         noise = 0.15 * np.random.normal(0, 1, len(t))
         noise = signal.lfilter(*signal.butter(4, 1000/(SAMPLE_RATE/2)), noise)
         tone = tone * (0.7 + 0.3 * np.sin(2 * np.pi * 3 * t)) + noise
-
             # Smooth frequency + amplitude modulation
            # mod_freq = freq + 40 * np.sin(2 * np.pi * 6 * t)
             # amp_mod = 0.8 + 0.2 * np.sin(2 * np.pi * 3 * t)
