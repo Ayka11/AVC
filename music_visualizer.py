@@ -89,7 +89,7 @@ DURATION_SYMBOLS = {
 # --- Helper Functions ---
 
 def get_staff_y_position(note_name_octave, clef):
-    """Calculates the vertical pixel position for a note on the staff."""
+    "Calculates the vertical pixel position for a note on the staff."
     match = re.match(r'^([A-Ga-g]{1}[#b]?)(-?\d+)$', note_name_octave)
     if not match:
         print(f"Warning: Invalid note name format: {note_name_octave}")
@@ -115,7 +115,7 @@ def get_staff_y_position(note_name_octave, clef):
         raise ValueError("Invalid clef specified")
 
 def get_clef_for_note(note_name_octave):
-    """Simple rule to assign clef based on pitch."""
+    "Simple rule to assign clef based on pitch."
     try:
         midi = librosa.note_to_midi(note_name_octave)
         # Middle C (C4) is MIDI 60. Notes around/above C4 usually Treble, below Bass.
@@ -130,7 +130,7 @@ def get_clef_for_note(note_name_octave):
 
 
 def get_note_color(note_name, magnitude, max_magnitude):
-    """Gets color based on note name and adjusts intensity based on magnitude."""
+    "Gets color based on note name and adjusts intensity based on magnitude."
     match = re.match(r'^([A-Ga-g]{1}[#b]?)(-?\d+)$', note_name)
     if not match:
         base_name = 'C' # Default color if note name is weird
@@ -154,8 +154,7 @@ def extract_note_events(y, sr, min_duration_sec, magnitude_threshold_ratio):
     """
     # Use piptrack for frame-level pitch and magnitude
     # Limit frequency range to typical musical notes
-    pitches, magnitudes = librosa.core.piptrack(y=y, sr=sr, fmin=librosa.note_to_hz('C1'),
-                                                fmax=librosa.note_to_hz('C8'))
+    pitches, magnitudes = librosa.core.piptrack(y=y, sr=sr, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
     times = librosa.times_like(pitches, sr=sr)
 
     detected_notes = []
@@ -324,14 +323,14 @@ def quantize_note_durations(note_events, tempo, time_signature, tolerance=QUANTI
 # --- Drawing Functions ---
 
 def draw_staff(draw, staff_bottom_y, line_spacing, num_lines=5):
-    """Draws a single 5-line staff."""
+    "Draws a single 5-line staff."
     for i in range(num_lines):
         y = staff_bottom_y - i * line_spacing
         # Draw staff lines extending across the frame width where notation appears
         draw.line([(CLEF_WIDTH + TIME_SIG_WIDTH, y), (FRAME_WIDTH, y)], fill="black", width=2)
 
 def draw_clef(draw, clef_type, staff_bottom_y, line_spacing, font):
-    """Draws a clef symbol."""
+    "Draws a clef symbol."
     if clef_type == 'treble':
         # G clef position: loop around the G line (2nd line from bottom)
         clef_y = staff_bottom_y - 2 * line_spacing
@@ -349,7 +348,7 @@ font=font)
 font=font)
 
 def draw_time_signature(draw, time_signature_str, staff_bottom_y, line_spacing, font):
-    """Draws a time signature."""
+    "Draws a time signature."
     try:
         numerator, denominator = time_signature_str.split('/')
     except ValueError:
@@ -369,7 +368,7 @@ def draw_time_signature(draw, time_signature_str, staff_bottom_y, line_spacing, 
 
 def draw_note(draw, note_event, current_time_sec, scroll_offset_x,
 beat_duration_sec, font, max_magnitude):
-    """Draws a single note symbol on the staff."""
+    "Draws a single note symbol on the staff."
     note_name_octave = note_event['name']
     start_time = note_event['start_time']
     norm_magnitude = note_event['norm_magnitude']
