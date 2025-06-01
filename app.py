@@ -952,17 +952,16 @@ def get_frequency_from_color(r, g, b, threshold=10000):  # very high
 
 def generate_tone(frequencies, brush, duration=DURATION_PER_STEP):
     # Validate brush type first
-    valid_brushes = {"spray", "star", "cross", "square", "triangle", "sawtooth", "round","line"}
-    if brush.lower() not in valid_brushes:
+    valid_brushes = {"spray", "star", "cross", "square", "triangle", "sawtooth", "round", "line"}
+if brush.lower() not in valid_brushes:
         raise ValueError(f"Invalid brush type: {brush}. Valid options are {valid_brushes}")
     
 
     t = np.linspace(0, duration, int(SAMPLE_RATE * duration), False)
         # Parameter validation
-    if not isinstance(frequencies, (list, np.ndarray)) or len(frequencies) == 0:
+if not isinstance(frequencies, (list, np.ndarray)) or len(frequencies) == 0:
         return np.zeros_like(t)
-
-    if not frequencies:
+if not frequencies:
         return np.zeros_like(t)
     frequencies = np.clip(frequencies, 20, 20000)  # Audible range
     
@@ -990,96 +989,93 @@ for freq in frequencies:
             # amp_mod = 0.8 + 0.2 * np.sin(2 * np.pi * 3 * t)
            # tone = np.sin(2 * np.pi * mod_freq * t) * amp_mod
 
-        elif brush.lower() == "star":
-        # Additive synthesis with harmonic series
-        harmonics = [
-            (1, 0.6),   # Fundamental
-            (2, 0.4),   # Octave
-            (3, 0.3),   # Perfect fifth
-            (5, 0.2)    # Major third
-        ]
-        tone = sum(np.sin(h * phase) * amp for h, amp in harmonics)
+elif brush.lower() == "star":
+   # Additive synthesis with harmonic series
+   harmonics = [
+       (1, 0.6),   # Fundamental
+       (2, 0.4),   # Octave
+       (3, 0.3),   # Perfect fifth
+       (5, 0.2)    # Major third
+       ]
+       tone = sum(np.sin(h * phase) * amp for h, amp in harmonics)
         
         # Gentle detuning
-        detune = 1 + 0.001 * np.sin(2 * np.pi * 0.1 * t)
-        tone = tone * detune
+       detune = 1 + 0.001 * np.sin(2 * np.pi * 0.1 * t)
+       tone = tone * detune
 
-            # Musical interval: root + octave + major third (harmonic stack)
-         #   tone = (
-          #      0.5 * np.sin(2 * np.pi * freq * t) +
-           #     0.3 * np.sin(2 * np.pi * freq * 2 * t) +
-            #    0.2 * np.sin(2 * np.pi * freq * 2.5 * t)  # Major third above octave
-            # )
+       # Musical interval: root + octave + major third (harmonic stack)
+       #   tone = (
+       #      0.5 * np.sin(2 * np.pi * freq * t) +
+       #     0.3 * np.sin(2 * np.pi * freq * 2 * t) +
+       #    0.2 * np.sin(2 * np.pi * freq * 2.5 * t)  # Major third above octave
+       # )
 
-        elif brush.lower() == "cross":
-            # Phase distortion synthesis
-        distorted_phase = phase + 0.8 * np.sin(phase)
-        tone = np.sin(distorted_phase) * np.sin(2 * distorted_phase)
+elif brush.lower() == "cross":
+# Phase distortion synthesis
+distorted_phase = phase + 0.8 * np.sin(phase)
+tone = np.sin(distorted_phase) * np.sin(2 * distorted_phase)
 
-            # Chorus-like detuning effect
-            #tone = (
-            #    0.6 * np.sin(2 * np.pi * freq * t) +
-            #    0.4 * np.sin(2 * np.pi * (freq + 6) * t)
-            #)
+       # Chorus-like detuning effect
+       #tone = (
+       #    0.6 * np.sin(2 * np.pi * freq * t) +
+       #    0.4 * np.sin(2 * np.pi * (freq + 6) * t)
+       #)
+elif brush.lower() == "square":
+# Pulse width modulation
+pw = 0.5 + 0.3 * np.sin(2 * np.pi * 0.5 * t)
+tone = signal.square(phase, duty=pw)
 
-        elif brush.lower() == "square":
-                # Pulse width modulation
-        pw = 0.5 + 0.3 * np.sin(2 * np.pi * 0.5 * t)
-        tone = signal.square(phase, duty=pw)
+       # Rich odd harmonics for a warm square tone
+       # tone = signal.square(2 * np.pi * freq * t)
+       # tone += 0.3 * np.sin(3 * 2 * np.pi * freq * t)
+       # tone += 0.2 * np.sin(5 * 2 * np.pi * freq * t)
 
-            # Rich odd harmonics for a warm square tone
-           # tone = signal.square(2 * np.pi * freq * t)
-            # tone += 0.3 * np.sin(3 * 2 * np.pi * freq * t)
-            # tone += 0.2 * np.sin(5 * 2 * np.pi * freq * t)
+elif brush.lower() == "triangle":
+# Band-limited triangle with even harmonics
+tone = signal.sawtooth(phase, width=0.5)
+tone -= 0.25 * signal.sawtooth(2 * phase, width=0.5)
 
-        elif brush.lower() == "triangle":
-                # Band-limited triangle with even harmonics
-        tone = signal.sawtooth(phase, width=0.5)
-        tone -= 0.25 * signal.sawtooth(2 * phase, width=0.5)
+       # Soft odd harmonics — smooth and mellow
+       # tone = signal.sawtooth(2 * np.pi * freq * t, width=0.5)
+       # tone += 0.2 * np.sin(3 * 2 * np.pi * freq * t)
 
-            # Soft odd harmonics — smooth and mellow
-           # tone = signal.sawtooth(2 * np.pi * freq * t, width=0.5)
-            # tone += 0.2 * np.sin(3 * 2 * np.pi * freq * t)
-
-        elif brush.lower() == "sawtooth":
-        # Supersaw-style detuned oscillators
-        detune = [0.99, 1.0, 1.01]
-        tone = sum(0.4 * np.sin(2 * np.pi * d * frequencies.mean() * t) for d in detune)
+elif brush.lower() == "sawtooth":
+# Supersaw-style detuned oscillators
+detune = [0.99, 1.0, 1.01]
+tone = sum(0.4 * np.sin(2 * np.pi * d * frequencies.mean() * t) for d in detune)
     
 
-            # Full harmonic spectrum, shaped by envelope
-          #  tone = signal.sawtooth(2 * np.pi * freq * t)
+       # Full harmonic spectrum, shaped by envelope
+       #  tone = signal.sawtooth(2 * np.pi * freq * t)
 
-        else:  # Default "round" - sine wave
-            # Subtle vibrato and harmonics
-        vibrato = 0.1 * np.sin(2 * np.pi * 6 * t)  # Reduced from 0.3
-        tone = 0.9 * np.sin(phase + vibrato) + 0.1 * np.sin(3 * phase)  # 90/10 balance
-
-           # tone = np.sin(2 * np.pi * freq * t)
-    else:
-        raise ValueError(f"Invalid brush type: {brush}. Valid options are {valid_brushes}")
+else:  # Default "round" - sine wave
+# Subtle vibrato and harmonics
+vibrato = 0.1 * np.sin(2 * np.pi * 6 * t)  # Reduced from 0.3
+tone = 0.9 * np.sin(phase + vibrato) + 0.1 * np.sin(3 * phase)  # 90/10 balance
+# tone = np.sin(2 * np.pi * freq * t)
+else:
+raise ValueError(f"Invalid brush type: {brush}. Valid options are {valid_brushes}")
     
+waveform += tone
 
-        waveform += tone
+# Envelope: soft attack and exponential decay
+envelope = np.ones_like(t)
+attack = int(0.01 * SAMPLE_RATE)
+if attack > 0:
+envelope[:attack] = np.linspace(0, 1, attack)
+envelope[attack:] = np.exp(-4 * t[attack:])
 
-    # Envelope: soft attack and exponential decay
-    envelope = np.ones_like(t)
-    attack = int(0.01 * SAMPLE_RATE)
-    if attack > 0:
-        envelope[:attack] = np.linspace(0, 1, attack)
-    envelope[attack:] = np.exp(-4 * t[attack:])
-
-    waveform *= envelope
+waveform *= envelope
 
     # Normalize to prevent clipping
     tone = 0.8 * tone / (np.max(np.abs(tone)) + 1e-9)
 
     # Normalize to avoid clipping
     max_val = np.max(np.abs(waveform))
-    if max_val > 0:
-        waveform /= max_val
+if max_val > 0:
+    waveform /= max_val
 
-    return tone
+return tone
    # return waveform
 
     
