@@ -147,32 +147,32 @@
 
     <div class="tool-box">
       <div id="colorButtons">
-        <div> <button style="background-color: #82c800;" onclick="setColor('#82c800')"></button><br>
+        <div> <button style="background-color: #80E000;" onclick="setColor('#80E000')"></button><br>  
 	  <span>C4</span>
 	</div>
 	      
 	<div>
-        <button style="background-color: #005068;" onclick="setColor('#005068')"></button><br>
+        <button style="background-color: #006073;" onclick="setColor('#006073')"></button><br>   
 	  <span>D4</span>
 	</div>
 	      
 	<div>
-        <button style="background-color: #7a00c3;" onclick="setColor('#7a00c3')"></button><br>
+        <button style="background-color: #7e00d9;" onclick="setColor('#7e00d9')"></button><br>
 	  <span>E4</span>
 	</div>
 	      
 	<div>
-        <button style="background-color: #870077;" onclick="setColor('#870077')"></button><br>
+        <button style="background-color: #9F1AEC;" onclick="setColor('#9F1AEC')"></button><br>
 	  <span>F4</span>
 	</div>
 	      
 	<div>
-        <button style="background-color: #bd0084;" onclick="setColor('#bd0084')"></button><br>
+        <button style="background-color: #D91A80;" onclick="setColor('#D91A80')"></button><br>
 	  <span>G4</span>
 	</div>
 
 	<div>
-        <button style="background-color: #f85e8b;" onclick="setColor('#f85e8b')"></button><br>
+        <button style="background-color: #F95700;" onclick="setColor('#F95700')"></button><br>
 	  <span>A4</span>
 	</div>
 	      
@@ -181,7 +181,7 @@
 	  <span>B4</span>
 	</div>
 	<div>
-        <button style="background-color: #8cd200;" onclick="setColor('#8cd200')"></button><br>
+        <button style="background-color: 3399CC;" onclick="setColor('3399CC')"></button><br>
 	  <span>C5</span>
 	</div>
       </div>
@@ -190,9 +190,11 @@
     </div>
   </div>
 
-<div id="infoBox">
-  <span style="cursor: pointer;">ℹ️</span>
-  <div id="infoContent">
+<div id="infoBox" style="position: relative;">
+    <span style="cursor: pointer; position: absolute; top: 100px; right: 100px;">ℹ️</span>
+	 # <div id="infoBox">
+	# <span style="cursor: pointer;">ℹ️</span>
+   <div id="infoContent">
     <strong>🎨 How to Use This App</strong><br><br>
 	  <ul class="list-unstyled">
 		  <li><b>🎨 Color = Note & Frequency:</b> Each color corresponds to a specific musical note and its frequency. Try different hues to hear different pitches.</li>
@@ -202,16 +204,16 @@
 	  </ul>
     <p class="mb-0 text-muted" style="font-size: 0.85em;">Tip: Mix brush types and colors to compose rich soundscapes visually!</p>
 </div>
-    
 </div>
- 
  <div style="font-size:14px;padding:10px">
-	 <p> SynestheticSounds is a creative painting application that not only lets you draw with various artistic brushes, 
+	 <p style="text-align:center;font-weight:bold;"> SynestheticSounds is a creative painting application that not only lets you draw with various artistic brushes, 
 but also generates sound based on the colors and shapes you use. It's a unique way to visualize and sonify your creativity.
 This is a creative painting application that not only lets you draw with various artistic brushes, 
 but also generates sound based on the colors and shapes you use. It's a unique way to visualize 
 and sonify your creativity. </p>
-	  </div>
+</div> 
+ 
+
    <div id="canvasContainer">
   <canvas id="canvas" width="1000" height="500"></canvas>
    </div>
