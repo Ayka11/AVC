@@ -227,7 +227,7 @@ and sonify your creativity. </p>
   <br />
   <audio id="player" controls></audio>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js">
+<script>
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
   const colorPicker = document.getElementById('colorPicker');
@@ -428,19 +428,7 @@ function drawXAxisLabels() {
 
   saveState(); // initial state
   
-// Show onboarding modal on first visit
-window.addEventListener('DOMContentLoaded', () => {
-  const seenModal = localStorage.getItem('seenOnboarding');
-  if (!seenModal) {
-    const modal = new bootstrap.Modal(document.getElementById('onboardingModal'));
-    modal.show();
-    localStorage.setItem('seenOnboarding', 'true');
-  }
 
-  // Activate Bootstrap tooltips
-  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-  tooltipTriggerList.map(t => new bootstrap.Tooltip(t));
-});
 </script>
 	<!-- Onboarding Modal -->
 <div class="modal fade" id="onboardingModal" tabindex="-1" aria-labelledby="onboardingLabel" aria-hidden="true">
