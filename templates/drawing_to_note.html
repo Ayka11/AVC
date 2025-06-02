@@ -290,6 +290,7 @@ and sonify your creativity. </p>
   // Mouse Events
   canvas.addEventListener('mousedown', e => {
     drawing = true;
+    hasMoved = false;
     draw(e);
   });
   canvas.addEventListener('mouseup', () => {
