@@ -301,6 +301,7 @@ and sonify your creativity. </p>
   // Touch Events
   canvas.addEventListener('touchstart', (e) => {
     drawing = true;
+    let hasMoved = false;
     draw(e.touches[0]);
   });
   canvas.addEventListener('touchmove', (e) => {
@@ -336,8 +337,14 @@ and sonify your creativity. </p>
       break;
     case 'line':
       ctx.lineWidth = brushSize;
-      ctx.lineTo(x, y);
-      ctx.stroke();
+      if (!hasMoved) {
+        ctx.beginPath();
+        ctx.moveTo(x, y); // Only set once per stroke
+        hasMoved = true;
+      } else {
+        ctx.lineTo(x, y);
+        ctx.stroke();
+      }
       break;
     case 'round':
       ctx.beginPath();
