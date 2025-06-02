@@ -15,7 +15,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin: 20px;
+      margin: 5px;
       background-color: #f0f0f0;
     }
 
@@ -87,7 +87,7 @@
     }
 
      #infoBox {
-    position: absolute;
+    position: relative;
     top: 10px;
     right: 10px;
     z-index: 1000;
@@ -101,7 +101,7 @@
     width: 280px;
     font-size: 12px;
     line-height: 1.4;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 8px rgba (0,0,0,0.2);
     border-radius: 8px;
   }
   #infoBox:hover #infoContent {
@@ -181,7 +181,7 @@
 	  <span>B4</span>
 	</div>
 	<div>
-        <button style="background-color: 3399CC;" onclick="setColor('3399CC')"></button><br>
+        <button style="background-color: #3399CC;" onclick="setColor('#3399CC')"></button><br>
 	  <span>C5</span>
 	</div>
       </div>
@@ -191,10 +191,8 @@
   </div>
 
 <div id="infoBox" style="position: relative;">
-    <span style="cursor: pointer; position: absolute; top: 100px; right: 100px;">ℹ️</span>
-	 # <div id="infoBox">
-	# <span style="cursor: pointer;">ℹ️</span>
-   <div id="infoContent">
+    <span style="cursor: pointer; position: relative; top: 100px; right: 100px;">ℹ️</span>
+	 <div id="infoContent">
     <strong>🎨 How to Use This App</strong><br><br>
 	  <ul class="list-unstyled">
 		  <li><b>🎨 Color = Note & Frequency:</b> Each color corresponds to a specific musical note and its frequency. Try different hues to hear different pitches.</li>
@@ -217,7 +215,11 @@ and sonify your creativity. </p>
    <div id="canvasContainer">
   <canvas id="canvas" width="1000" height="500"></canvas>
    </div>
-  <span> Time (sec) </span>
+	  <div style="text-align: center;">
+    <span style="position: relative; display: inline-flex; justify-content: center;">Time (sec)</span>
+</div>
+
+  # <span> Time (sec) </span>
   <div id="actionButtons">
     <button onclick="submitDrawing()" data-bs-toggle="tooltip" title="Click to generate sound from your drawing.">🎼 Submit Drawing</button>
     <button onclick="downloadAudio()" data-bs-toggle="tooltip" title="Save your generated audio as a WAV file.">🔊 Download Audio</button>
@@ -242,7 +244,7 @@ and sonify your creativity. </p>
   let redoStack = [];
 
   function resizeCanvas() {
-    const width = window.innerWidth < 1024 ? window.innerWidth - 40 : 1000;
+    const width = window.innerWidth < 1024 window.innerWidth - 40: 1000;
     const height = width * 0.5;
     canvas.width = width;
     canvas.height = height;
