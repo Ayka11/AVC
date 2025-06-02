@@ -322,54 +322,99 @@ and sonify your creativity. </p>
   }
 
   function draw(e) {
-    if (!drawing) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    ctx.fillStyle = currentColor;
-    ctx.strokeStyle = currentColor;
+  if (!drawing) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
 
-    switch (tool) {
-      case 'square': ctx.fillRect(x, y, brushSize, brushSize); break;
-      case 'line':
-        ctx.lineWidth = brushSize;
-        ctx.lineTo(x, y);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        break;
-      case 'round':
-        ctx.beginPath();
-        ctx.arc(x, y, brushSize / 2, 0, Math.PI * 2);
-        ctx.fill();
-        break;
-      case 'star': drawStar(x, y, 5, brushSize / 2, brushSize); break;
-      case 'spray':
-        for (let i = 0; i < brushSize * 2; i++) {
-          const offsetX = (Math.random() - 0.5) * brushSize * 2;
-          const offsetY = (Math.random() - 0.5) * brushSize * 2;
-          ctx.fillRect(x + offsetX, y + offsetY, 1, 1);
-        }
-        break;
-    }
+  ctx.fillStyle = currentColor;
+  ctx.strokeStyle = currentColor;
+
+  switch (tool) {
+    case 'square':
+      ctx.fillRect(x, y, brushSize, brushSize);
+      break;
+    case 'line':
+      ctx.lineWidth = brushSize;
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      break;
+    case 'round':
+      ctx.beginPath();
+      ctx.arc(x, y, brushSize / 2, 0, Math.PI * 2);
+      ctx.fill();
+      break;
+    case 'star':
+      drawStar(x, y, 5, brushSize / 2, brushSize);
+      break;
+    case 'spray':
+      for (let i = 0; i < brushSize * 2; i++) {
+        const offsetX = (Math.random() - 0.5) * brushSize * 2;
+        const offsetY = (Math.random() - 0.5) * brushSize * 2;
+        ctx.fillRect(x + offsetX, y + offsetY, 1, 1);
+      }
+      break;
+    case 'cross':
+      drawCross(x, y, brushSize);
+      break;
+    case 'triangle':
+      drawTriangle(x, y, brushSize);
+      break;
+    case 'sawtooth':
+      drawSawtooth(x, y, brushSize);
+      break;
   }
+}
 
-  function drawStar(cx, cy, spikes, innerRadius, outerRadius) {
-    let rot = Math.PI / 2 * 3;
-    let step = Math.PI / spikes;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy - outerRadius);
-    for (let i = 0; i < spikes; i++) {
-      ctx.lineTo(cx + Math.cos(rot) * outerRadius, cy + Math.sin(rot) * outerRadius);
-      rot += step;
-      ctx.lineTo(cx + Math.cos(rot) * innerRadius, cy + Math.sin(rot) * innerRadius);
-      rot += step;
-    }
-    ctx.lineTo(cx, cy - outerRadius);
-    ctx.closePath();
-    ctx.fill();
+function drawStar(cx, cy, spikes, innerRadius, outerRadius) {
+  let rot = Math.PI / 2 * 3;
+  let step = Math.PI / spikes;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - outerRadius);
+  for (let i = 0; i < spikes; i++) {
+    ctx.lineTo(cx + Math.cos(rot) * outerRadius, cy + Math.sin(rot) * outerRadius);
+    rot += step;
+    ctx.lineTo(cx + Math.cos(rot) * innerRadius, cy + Math.sin(rot) * innerRadius);
+    rot += step;
   }
+  ctx.lineTo(cx, cy - outerRadius);
+  ctx.closePath();
+  ctx.fill();
+}
 
+function drawCross(x, y, size) {
+  ctx.beginPath();
+  ctx.moveTo(x - size / 2, y);
+  ctx.lineTo(x + size / 2, y);
+  ctx.moveTo(x, y - size / 2);
+  ctx.lineTo(x, y + size / 2);
+  ctx.stroke();
+}
+
+function drawTriangle(x, y, size) {
+  const height = size * Math.sqrt(3) / 2;
+  ctx.beginPath();
+  ctx.moveTo(x, y - height / 2);
+  ctx.lineTo(x - size / 2, y + height / 2);
+  ctx.lineTo(x + size / 2, y + height / 2);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawSawtooth(x, y, size) {
+  const teeth = 4;
+  const width = size;
+  const height = size;
+  const toothWidth = width / teeth;
+
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  for (let i = 0; i < teeth; i++) {
+    ctx.lineTo(x + i * toothWidth + toothWidth / 2, y - height);
+    ctx.lineTo(x + (i + 1) * toothWidth, y);
+  }
+  ctx.stroke();
+}
   function saveState() {
     undoStack.push(canvas.toDataURL());
     redoStack = [];
