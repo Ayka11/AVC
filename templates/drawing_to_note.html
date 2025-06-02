@@ -88,8 +88,6 @@
 
      #infoBox {
     position: relative;
- 
-    z-index: 1000;
     width:70%;
   }
   #infoContent {
@@ -103,6 +101,9 @@
     line-height: 1.4;
     box-shadow: 0 2px 8px rgba (0,0,0,0.2);
     border-radius: 8px;
+     z-index: 10;
+     position: absolute;
+	  
   }
   #infoBox:hover #infoContent {
     display: block;
