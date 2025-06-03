@@ -47,7 +47,6 @@ import numpy as np
 from numpy.random import uniform
 from scipy import signal
 
-
 app = Flask(__name__)
 app.secret_key = 'Lantop2333'  # Set a secret key session
 
@@ -893,6 +892,9 @@ def generate_tone(frequencies, brush, duration=DURATION_PER_STEP):
         raise ValueError(f"Invalid brush type: {brush}. Valid options are {valid_brushes}")
 
     t = np.linspace(0, duration, int(SAMPLE_RATE * duration), False)
+    
+    if frequencies==0:
+        return np.zeros_like(t)
 
     # Parameter validation
     if not isinstance(frequencies, (list, np.ndarray)) or len(frequencies) == 0:
@@ -901,6 +903,8 @@ def generate_tone(frequencies, brush, duration=DURATION_PER_STEP):
     # but keeping it for now if there's a subtle difference intended (e.g., empty list vs. None)
     if not frequencies:
         return np.zeros_like(t)
+    
+    
     
     frequencies = np.clip(frequencies, 20, 20000)  # Audible range
     
@@ -1014,10 +1018,9 @@ def generate_tone(frequencies, brush, duration=DURATION_PER_STEP):
 
     # Envelope: soft attack and exponential decay
     envelope = np.ones_like(t)
-    
+    attack = int(0.1 * SAMPLE_RATE)
     attack_len = int(0.1 * len(t))  # 10% of duration
     attack_len = max(1, attack_len)
-
     
     envelope[:attack_len] = np.linspace(0, 1, attack_len)
     envelope[attack_len:] = np.exp(-5 * np.linspace(0, 1, len(t) - attack_len))
@@ -1067,16 +1070,31 @@ def submit():
                 if r==g and g==b:
                     continue
                 freq=get_quickly_frequency_by_color(int(r),int(g),int(b))
-                print(r,g,b,a)
+                
                 if a > 200:  # ignore transparent pixels
                     freq = get_frequency_from_color(r, g, b)
                     if freq:
                         freqs.append(freq)
                         colors_found.add((r, g, b))
-          
+           
         if freqs:
             timeline[x] = list(np.unique(freqs))
-
+            print(x,timeline[x])
+            
+        elif len(list(timeline))>0:
+            timeline[x] = 0
+            print(x,timeline[x])
+    
+    stop=1
+    for x in range(width):
+        if x in timeline:
+            if not (timeline[x] == 0):
+                stop=x
+    
+    for r in range(stop,width):
+        del timeline[r]
+    
+    print(timeline)
     print(f"Colors detected (approx): {colors_found}")
     if not timeline:
         return jsonify({"error": "No valid colors detected"}), 400
@@ -1089,9 +1107,8 @@ def submit():
     audio_segments = []
     for x in sorted(timeline.keys()):
     
-        print('brush',brush,timeline[x])
         segment = generate_tone(timeline[x],brush)
-        segment = segment / np.max(np.abs(segment))  # Normalize per slice
+        #segment = segment / np.max(np.abs(segment))  # Normalize per slice
         audio_segments.append(segment)
     
     audio = np.concatenate(audio_segments)
