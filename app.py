@@ -57,9 +57,9 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # Assuming DURATION_PER_STEP and SAMPLE_RATE are defined globally or passed in
 # For demonstration, let's define them here:
-DURATION_PER_STEP = 0.5  # seconds
+#DURATION_PER_STEP = 0.5  # seconds
 SAMPLE_RATE = 44100      # Hz
-# DURATION_PER_STEP = (60)/1000  # seconds per X step (column)
+DURATION_PER_STEP = (60)/1000  # seconds per X step (column)
 
 NOTE_TO_SEMITONE = {
     'C': 0, 'C#': 1, 'D': 2, 'D#': 3,
