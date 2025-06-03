@@ -1014,14 +1014,10 @@ def generate_tone(frequencies, brush, duration=DURATION_PER_STEP):
 
     # Envelope: soft attack and exponential decay
     envelope = np.ones_like(t)
-    attack = int(0.01 * SAMPLE_RATE)
-    if attack > 0:
-        envelope[:attack] = np.linspace(0, 1, attack)
-    # Ensure the decay starts from the end of the attack, not from 0
-    # Also, ensure t is scaled correctly for the exponential decay
-    decay_start_index = attack
-    if len(t) > decay_start_index:
-        envelope[decay_start_index:] = np.exp(-4 * (t[decay_start_index:] - t[decay_start_index]))
+    attack = int(0.1 * SAMPLE_RATE)
+    
+    envelope[:attack_len] = np.linspace(0, 1, attack_len)
+    envelope[attack_len:] = np.exp(-5 * np.linspace(0, 1, len(t) - attack_len))
 
     waveform *= envelope
 
