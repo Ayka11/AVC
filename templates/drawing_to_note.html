@@ -425,32 +425,38 @@ function drawSawtooth(x, y, size) {
   }
   ctx.stroke();
 }
-  function saveState() {
-    undoStack.push(canvas.toDataURL());
-    redoStack = [];
-  }
+ function saveState() {
+  drawXAxisLabels(); 
+  undoStack.push(canvas.toDataURL());
+  if (undoStack.length > 50) undoStack.shift(); // limit history
+  redoStack.length = 0; // clear redo stack after new action
+}
 
-  function undo() {
-    if (!undoStack.length) return;
-    redoStack.push(canvas.toDataURL());
-    restoreState(undoStack.pop());
+function undo() {
+  if (undoStack.length > 1) {
+    const lastState = undoStack.pop();
+    redoStack.push(lastState);
+    restoreState(undoStack[undoStack.length - 1]);
   }
+}
 
-  function redo() {
-    if (!redoStack.length) return;
-    undoStack.push(canvas.toDataURL());
-    restoreState(redoStack.pop());
+function redo() {
+  if (redoStack.length > 0) {
+    const state = redoStack.pop();
+    restoreState(state);
+    undoStack.push(state);
   }
+}
 
-  function restoreState(dataURL) {
-    const img = new Image();
-    img.onload = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-	  drawXAxisLabels();
-    };
-    img.src = dataURL;
-  }
+function restoreState(stateURL) {
+  const img = new Image();
+  img.onload = function () {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0);
+  };
+  img.src = stateURL;
+}
+
 
   function saveImage() {
     const link = document.createElement('a');
