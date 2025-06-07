@@ -511,8 +511,9 @@ def process_audio_to_gif(audio_path,gif_path):
         
         C=(np.random.randint(255),np.random.randint(255),np.random.randint(255))
 
-        #font2 = ImageFont.truetype("static/DejaVuSans.ttf", size=30)
-        font2 = ImageFont.truetype("static/Bravura.otf", size=30)
+        font2 = ImageFont.truetype("static/DejaVuSans.ttf", size=30)
+        font3 = ImageFont.truetype("static/DejaVuSans.ttf", size=18)
+        #font2 = ImageFont.truetype("static/Bravura.otf", size=30)
         y_position=lower_freq_lines[0]-80
         
         
@@ -554,7 +555,7 @@ def process_audio_to_gif(audio_path,gif_path):
             
             #print(n,string_number,symbol)
             
-            font3 = ImageFont.truetype("arial.ttf", size=18)
+            #font3 = ImageFont.truetype("arial.ttf", size=18)
             
             if string_number<6:
                  y_position = lower_freq_lines[0]-60-2*string_number
