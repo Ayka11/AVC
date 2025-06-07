@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 import random
 import matplotlib.pyplot as plt
 import imageio
-import imageio.v2 as iio
+#import imageio.v2 as iio
 import os
 
 import numpy as np
@@ -509,13 +509,10 @@ def process_audio_to_gif(audio_path,gif_path):
         draw.line([width-5, lower_freq_lines[0], width-5, lower_freq_lines[-1]], fill="black", width=2)
         draw.line([width-10, lower_freq_lines[0], width-10, lower_freq_lines[-1]], fill="black", width=2)
         
-        
-        
-        
-        
         C=(np.random.randint(255),np.random.randint(255),np.random.randint(255))
 
         font2 = ImageFont.truetype("static/DejaVuSans.ttf", size=30)
+        font2 = ImageFont.truetype("static/Bravura.otf", size=30)
         y_position=lower_freq_lines[0]-80
         
         
