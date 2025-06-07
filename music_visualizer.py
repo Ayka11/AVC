@@ -511,7 +511,7 @@ def process_audio_to_gif(audio_path,gif_path):
         
         C=(np.random.randint(255),np.random.randint(255),np.random.randint(255))
 
-        font2 = ImageFont.truetype("static/DejaVuSans.ttf", size=30)
+        #font2 = ImageFont.truetype("static/DejaVuSans.ttf", size=30)
         font2 = ImageFont.truetype("static/Bravura.otf", size=30)
         y_position=lower_freq_lines[0]-80
         
