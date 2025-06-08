@@ -520,7 +520,7 @@ def process_audio_to_gif(audio_path,gif_path):
         
         
         draw.text((35,y_position-13),"2", fill=(0,0,0), font=font2)
-        draw.text((35,y_position+10),"4", fill=(0,0,0), font=font2)        
+        draw.text((35,y_position+10),str(estimated_beats_per_measure), fill=(0,0,0), font=font2)        
         
         font = ImageFont.truetype("static/Bravura.otf", size=50)
         draw.text((1,y_position),"𝄢", fill=C, font=font)  
