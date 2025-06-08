@@ -44,6 +44,7 @@ def get_note_durations(notes, sr, hop_length, beats_per_measure=4, measure_durat
     return [(note, map_duration(beat)) for (note, _), beat in zip(grouped, durations_in_beats)]
 
 duration_symbol={'whole':1,'half':2,'quarter':3,'eighth':4,'sixteenth':5}
+duration_symbol2={'whole':1,'half':1/2,'quarter':1/4,'eighth':1/8,'sixteenth':1/16}
 
 def get_notes_from_audio(y, sr):
     # Step 1: Get pitch and magnitude from piptrack
@@ -443,15 +444,16 @@ def process_audio_to_gif(audio_path,gif_path):
     
     for f in files:
         os.remove('music/'+f)
-
-    nn=int(sr*8);
+    
+    ttt=6
+    nn=int(sr*ttt);
 
     
     d=len(list(range(0,sr*t-nn,nn)))
     canvas_size = (width, height*d)
     artwork = Image.new("RGB", canvas_size, "white")
     draw = ImageDraw.Draw(artwork)
-
+    
     tempo, beat_frames = librosa.beat.beat_track(y=audio_data_org[:sr*10], sr=sr)
     beat_times = librosa.frames_to_time(beat_frames)
 
@@ -464,7 +466,6 @@ def process_audio_to_gif(audio_path,gif_path):
             
     print(estimated_beats_per_measure)
     
-    
     for tt in range(0,sr*t-nn,nn):
         
         
@@ -474,6 +475,7 @@ def process_audio_to_gif(audio_path,gif_path):
         
     
         note_durations = get_note_durations(notes, sr=sr, hop_length=512,beats_per_measure=estimated_beats_per_measure)
+        
         
         #print('durrrrr',note_durations)
         #print(len(notes),len(note_durations))
@@ -493,29 +495,15 @@ def process_audio_to_gif(audio_path,gif_path):
             y=higher_freq_lines[i]
             draw.line([0, y,width, y], fill="black", width=2)
         
-        draw.line([width/2, lower_freq_lines[0],width/2, lower_freq_lines[-1]], fill="black", width=2)        
-        draw.line([width/2, higher_freq_lines[0],width/2, higher_freq_lines[-1]], fill="black", width=2)
+        draw.line([width/3, lower_freq_lines[0],width/3, lower_freq_lines[-1]], fill="black", width=2)        
+        draw.line([width/3, higher_freq_lines[0],width/3, higher_freq_lines[-1]], fill="black", width=2)
         
-        draw.line([width/4, lower_freq_lines[0],width/4, lower_freq_lines[-1]], fill="black", width=2)        
-        draw.line([width/4, higher_freq_lines[0],width/4, higher_freq_lines[-1]], fill="black", width=2)
-        
-        draw.line([3*width/4, lower_freq_lines[0],3*width/4, lower_freq_lines[-1]], fill="black", width=2)        
-        draw.line([3*width/4, higher_freq_lines[0],3*width/4, higher_freq_lines[-1]], fill="black", width=2)
-        
-        #draw.line([0, 0, 0, height*d], fill="black", width=7)
-        #draw.line([width, 0, width, height*d], fill="black", width=7)
-        
-        draw.line([width-5, higher_freq_lines[0], width-5, higher_freq_lines[-1]], fill="black", width=2)
-        draw.line([width-10, higher_freq_lines[0], width-10, higher_freq_lines[-1]], fill="black", width=2)
-        
-        draw.line([width-5, lower_freq_lines[0], width-5, lower_freq_lines[-1]], fill="black", width=2)
-        draw.line([width-10, lower_freq_lines[0], width-10, lower_freq_lines[-1]], fill="black", width=2)
-        
+        draw.line([2*width/3, lower_freq_lines[0],2*width/3, lower_freq_lines[-1]], fill="black", width=2)        
+        draw.line([2*width/3, higher_freq_lines[0],2*width/3, higher_freq_lines[-1]], fill="black", width=2)
+     
         C=(np.random.randint(255),np.random.randint(255),np.random.randint(255))
 
         font2 = ImageFont.truetype("static/DejaVuSans.ttf", size=30)
-        font3 = ImageFont.truetype("static/DejaVuSans.ttf", size=18)
-        #font2 = ImageFont.truetype("static/Bravura.otf", size=30)
         y_position=lower_freq_lines[0]-80
         
         
@@ -532,6 +520,7 @@ def process_audio_to_gif(audio_path,gif_path):
         
         
         counter+=1
+        x_position=45
         
         for i,note in enumerate(note_durations):
                  
@@ -549,15 +538,21 @@ def process_audio_to_gif(audio_path,gif_path):
             duration=note[1]
             
             ds=duration_symbol[note[1]]
+            
+            ds2=duration_symbol2[note[1]]
            
             total_notes = len(note_durations)
-            spacing = width / total_notes
+            
+            spacing = (width-75) *  ds/(8*total_notes)
+            
             note_index = list(freq_symbols.keys()).index(n)
-            x_position = 45 + int((width-75)*1/len(note_durations)) + int((width-75)*i/len(note_durations))
             
-            #print(n,string_number,symbol)
+                 
+            x_position = x_position + int((width-75)*(1/(10*ttt))) 
+            print(x_position,"time:",ds2)
             
-            #font3 = ImageFont.truetype("arial.ttf", size=18)
+            
+            font3 = ImageFont.truetype("static/DejaVuSans.ttf", size=18)
             
             if string_number<6:
                  y_position = lower_freq_lines[0]-60-2*string_number
@@ -568,6 +563,9 @@ def process_audio_to_gif(audio_path,gif_path):
                 y_position = higher_freq_lines[0]-60-(2*(string_number-6))
                 draw.text((x_position,y_position),symbol, fill=color, font=font)             
                 draw.text((x_position,higher_freq_lines[0]+50),str(ds), fill=(0,0,0), font=font3) 
+                
+            x_position+=int((width-75)*(ds2/6)) 
+            
 
             
                 
