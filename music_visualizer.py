@@ -451,6 +451,19 @@ def process_audio_to_gif(audio_path,gif_path):
     canvas_size = (width, height*d)
     artwork = Image.new("RGB", canvas_size, "white")
     draw = ImageDraw.Draw(artwork)
+
+    tempo, beat_frames = librosa.beat.beat_track(y=audio_data_org[:sr*10], sr=sr)
+    beat_times = librosa.frames_to_time(beat_frames)
+
+    # Estimate average interval between beats
+    intervals = [t2 - t1 for t1, t2 in zip(beat_times[:-1], beat_times[1:])]
+    avg_interval = sum(intervals) / len(intervals)
+
+    # Assume measure duration ~ 2 seconds and calculate beats per measure
+    estimated_beats_per_measure = round(2 / avg_interval)
+            
+    print(estimated_beats_per_measure)
+    
     
     for tt in range(0,sr*t-nn,nn):
         
@@ -458,20 +471,9 @@ def process_audio_to_gif(audio_path,gif_path):
         audio_data=audio_data_org[tt:tt+nn]
         notes=get_notes_from_audio(audio_data,sr)
         
-        # Get onset envelope and tempo
-        onset_env = librosa.onset.onset_strength(y=audio_data, sr=sr)
-        tempo, beats = librosa.beat.beat_track(onset_envelope=onset_env, sr=sr)
-
-        # Convert beat frames to time
-        beat_times = librosa.frames_to_time(beats, sr=sr)
-
-        # Compute intervals between beats
-        beat_intervals = np.diff(beat_times)
         
-        print(beat_intervals)
     
-        note_durations = get_note_durations(notes, sr=sr, hop_length=512)
-        
+        note_durations = get_note_durations(notes, sr=sr, hop_length=512,beats_per_measure=estimated_beats_per_measure)
         
         #print('durrrrr',note_durations)
         #print(len(notes),len(note_durations))
@@ -526,7 +528,7 @@ def process_audio_to_gif(audio_path,gif_path):
         y_position=higher_freq_lines[0]-60
         draw.text((1,y_position),"𝄞", fill=C, font=font)
         draw.text((35,y_position-75),"2", fill=(0,0,0), font=font2)
-        draw.text((35,y_position-50),"4", fill=(0,0,0), font=font2)  
+        draw.text((35,y_position-50),str(estimated_beats_per_measure), fill=(0,0,0), font=font2)  
         
         
         counter+=1
