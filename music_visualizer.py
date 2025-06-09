@@ -515,6 +515,7 @@ def process_audio_to_gif(audio_path,gif_path):
     font3 = ImageFont.truetype("static/DejaVuSans.ttf", size=18)
     time=0
     
+    wd=500
     for t in range(len(all_info)):  
     
         lower_freq_lines = [120, 130, 140, 150, 160,170]  
@@ -562,10 +563,10 @@ def process_audio_to_gif(audio_path,gif_path):
         note_duration = all_info[t][2]
         string_number=all_info[t][3]
         color=all_info[t][4]
-        spacing=0.005
+        spacing=0.05
         time+=spacing
         
-        x_position = x_position + int(spacing*(width-75)) 
+        x_position = x_position + wd*spacing
             
         if string_number<6:
             y_position = lower_freq_lines[0]-60-2*string_number
@@ -575,8 +576,9 @@ def process_audio_to_gif(audio_path,gif_path):
             y_position = higher_freq_lines[0]-60-(2*(string_number-6))
             draw.text((x_position,y_position),note_duration_symbol, fill=color, font=font)             
             #draw.text((x_position,higher_freq_lines[0]+50),str(note_duration_symbol), fill=(0,0,0), font=font3)
-            
-        x_position+=int(note_duration*(width-75))
+        
+        
+        x_position+=int(note_duration*wd)
         time+=note_duration
         
         #print(symbol,x_position,note_duration)
@@ -592,7 +594,7 @@ def process_audio_to_gif(audio_path,gif_path):
                 
                 print(r,r*width)
                 
-                draw.line([r*width, higher_freq_lines[0],r*width, higher_freq_lines[-1]], fill="black", width=2)
+                draw.line([r*width, lower_freq_lines[0],r*width, lower_freq_lines[-1]], fill="black", width=2)
                 draw.line([r*width, higher_freq_lines[0],r*width, higher_freq_lines[-1]], fill="black", width=2)
                     
         if x_position>width:
