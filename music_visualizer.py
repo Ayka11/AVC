@@ -30,21 +30,41 @@ def get_note_durations(notes, sr, hop_length, beats_per_measure=4, measure_durat
     durations_in_beats = [frames * frame_duration / seconds_per_beat for _, frames in grouped]
 
     def map_duration(beat):
-        if beat >= 2:
+        if beat >= 4:
             return "whole"
-        elif beat >= 1:
+        elif beat >= 2:
             return "half"
-        elif beat >= 0.5:
+        elif beat >= 1:
             return "quarter"
-        elif beat >= 0.25:
+        elif beat >= 0.5:
             return "eighth"
-        else:
+        elif beat>=0.25:
             return "sixteenth"
-
+        elif beat>0.125:
+            return "thirty-second"
+        else:
+            return "sixty-forth"
     return [(note, map_duration(beat)) for (note, _), beat in zip(grouped, durations_in_beats)]
 
-duration_symbol={'whole':1,'half':2,'quarter':3,'eighth':4,'sixteenth':5}
-duration_symbol2={'whole':1,'half':1/2,'quarter':1/4,'eighth':1/8,'sixteenth':1/16}
+#duration_symbol={'whole':1,'half':2,'quarter':3,'eighth':4,'sixteenth':5}
+duration_symbol = {
+    'whole': '𝅝',
+    'half': '𝅗𝅥',
+    'quarter': '♩',
+    'eighth': '♪',
+    'sixteenth': '𝅘𝅥𝅮',
+    'thirty-second':'𝅘𝅥𝅯',
+    'sixty-forth':'𝅘𝅥𝅰'
+}
+note_durations_values = {
+    "whole": 4,
+    "half": 2,
+    "quarter": 1,
+    "eighth": 0.5,
+    "sixteenth": 0.25,
+    "thirty-second": 0.125,
+    'sixty-forth':0.0625
+}
 
 def get_notes_from_audio(y, sr):
     # Step 1: Get pitch and magnitude from piptrack
@@ -486,7 +506,7 @@ def process_audio_to_gif(audio_path,gif_path):
             color=tuple(freq_symbols[n]["color"])
             
             ds=duration_symbol[note[1]]          
-            ds2=duration_symbol2[note[1]]
+            ds2=note_durations_values[note[1]]
             all_info.append((symbol, ds,ds2,string_number,color))
 
     
@@ -549,12 +569,12 @@ def process_audio_to_gif(audio_path,gif_path):
             
         if string_number<6:
             y_position = lower_freq_lines[0]-60-2*string_number
-            draw.text((x_position,y_position),symbol, fill=color, font=font)                      
-            draw.text((x_position,lower_freq_lines[0]+50),str(note_duration_symbol), fill=(0,0,0), font=font3)
+            draw.text((x_position,y_position),str(note_duration_symbol), fill=color, font=font)                      
+            #draw.text((x_position,lower_freq_lines[0]+50),str(note_duration_symbol), fill=(0,0,0), font=font3)
         else:
             y_position = higher_freq_lines[0]-60-(2*(string_number-6))
-            draw.text((x_position,y_position),symbol, fill=color, font=font)             
-            draw.text((x_position,higher_freq_lines[0]+50),str(note_duration_symbol), fill=(0,0,0), font=font3)
+            draw.text((x_position,y_position),note_duration_symbol, fill=color, font=font)             
+            #draw.text((x_position,higher_freq_lines[0]+50),str(note_duration_symbol), fill=(0,0,0), font=font3)
             
         x_position+=int(note_duration*(width-75))
         time+=note_duration
