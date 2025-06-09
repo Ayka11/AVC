@@ -542,7 +542,7 @@ def process_audio_to_gif(audio_path,gif_path):
         note_duration = all_info[t][2]
         string_number=all_info[t][3]
         color=all_info[t][4]
-        spacing=0.01
+        spacing=0.005
         time+=spacing
         
         x_position = x_position + int(spacing*(width-75)) 
@@ -561,12 +561,12 @@ def process_audio_to_gif(audio_path,gif_path):
         
         #print(symbol,x_position,note_duration)
         
-        time_range=[round(iii,2) for iii in np.arange(time-spacing-note_duration,time,0.01)]
+        time_range=[round(iii,2) for iii in np.arange(time-spacing-note_duration,time,0.005)]
         
         #print(time_range)
         for k in range(len(time_range)):
             
-            if round(time_range[k],2)%2==0:
+            if round(time_range[k],2)%2==0 and time_range[k]!=0:
                 
                 r=(time_range[k]-min(time_range))/(max(time_range)-min(time_range))
                 
