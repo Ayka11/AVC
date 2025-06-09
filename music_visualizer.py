@@ -464,27 +464,44 @@ def process_audio_to_gif(audio_path,gif_path):
     # Assume measure duration ~ 2 seconds and calculate beats per measure
     estimated_beats_per_measure = round(2 / avg_interval)
             
-    print(estimated_beats_per_measure)
+    all_info=[]
     
-    for tt in range(0,sr*t-nn,nn):
-        
-        
+    for tt in range(0,sr*t-nn,nn):  
         audio_data=audio_data_org[tt:tt+nn]
         notes=get_notes_from_audio(audio_data,sr)
-        
-        
-    
+
         note_durations = get_note_durations(notes, sr=sr, hop_length=512,beats_per_measure=estimated_beats_per_measure)
         
-        
-        #print('durrrrr',note_durations)
-        #print(len(notes),len(note_durations))
-        lower_freq_lines = [120, 130, 140, 150, 160,170]  
-        lower_freq_lines = [counter*height+ii for ii in lower_freq_lines]
-        
-        higher_freq_lines = [30, 40, 50, 60, 70,80]  
-        higher_freq_lines = [counter*height+ii for ii in higher_freq_lines]
+        for i,note in enumerate(note_durations):
+                 
+            n=note[0].replace("♯","#")
+            
+            if n not in freq_symbols:
+                continue
+            string_number = get_string_number_mod12(n[:3])
+            
+                
+            symbol=freq_symbols[n]["symbol"]
+            symbol=symbol.replace("#","♯")
+            color=tuple(freq_symbols[n]["color"])
+            
+            ds=duration_symbol[note[1]]          
+            ds2=duration_symbol2[note[1]]
+            all_info.append((symbol, ds,ds2,string_number,color))
 
+    
+    counter=0     
+    x_position=45    
+    font3 = ImageFont.truetype("static/DejaVuSans.ttf", size=18)
+    time=0
+    
+    for t in range(len(all_info)):  
+    
+        lower_freq_lines = [120, 130, 140, 150, 160,170]  
+        lower_freq_lines = [counter*height+ii for ii in lower_freq_lines]   
+        higher_freq_lines = [30, 40, 50, 60, 70,80]  
+        higher_freq_lines = [counter*height+ii for ii in higher_freq_lines]   
+        
         
         Num_lines=6
         for i in range(Num_lines):           
@@ -495,11 +512,11 @@ def process_audio_to_gif(audio_path,gif_path):
             y=higher_freq_lines[i]
             draw.line([0, y,width, y], fill="black", width=2)
         
-        draw.line([width/3, lower_freq_lines[0],width/3, lower_freq_lines[-1]], fill="black", width=2)        
-        draw.line([width/3, higher_freq_lines[0],width/3, higher_freq_lines[-1]], fill="black", width=2)
+        #draw.line([width/3, lower_freq_lines[0],width/3, lower_freq_lines[-1]], fill="black", width=2)        
+        #draw.line([width/3, higher_freq_lines[0],width/3, higher_freq_lines[-1]], fill="black", width=2)
         
-        draw.line([2*width/3, lower_freq_lines[0],2*width/3, lower_freq_lines[-1]], fill="black", width=2)        
-        draw.line([2*width/3, higher_freq_lines[0],2*width/3, higher_freq_lines[-1]], fill="black", width=2)
+        #draw.line([2*width/3, lower_freq_lines[0],2*width/3, lower_freq_lines[-1]], fill="black", width=2)        
+        #draw.line([2*width/3, higher_freq_lines[0],2*width/3, higher_freq_lines[-1]], fill="black", width=2)
      
         C=(np.random.randint(255),np.random.randint(255),np.random.randint(255))
 
@@ -516,57 +533,57 @@ def process_audio_to_gif(audio_path,gif_path):
         y_position=higher_freq_lines[0]-60
         draw.text((1,y_position),"𝄞", fill=C, font=font)
         draw.text((35,y_position-75),"2", fill=(0,0,0), font=font2)
-        draw.text((35,y_position-50),str(estimated_beats_per_measure), fill=(0,0,0), font=font2)  
-        
-        
-        counter+=1
-        x_position=45
-        
-        for i,note in enumerate(note_durations):
-                 
-            n=note[0].replace("♯","#")
-            
-            if n not in freq_symbols:
-                continue
-            string_number = get_string_number_mod12(n[:3])
-            
-                
-            symbol=freq_symbols[n]["symbol"]
-            symbol=symbol.replace("#","♯")
-            color=tuple(freq_symbols[n]["color"])
-            freq_value=freq_symbols[n]["frequency"]
-            duration=note[1]
-            
-            ds=duration_symbol[note[1]]
-            
-            ds2=duration_symbol2[note[1]]
-           
-            total_notes = len(note_durations)
-            
-            spacing = (width-75) *  ds/(8*total_notes)
-            
-            note_index = list(freq_symbols.keys()).index(n)
-            
-                 
-            x_position = x_position + int((width-75)*(1/(10*ttt))) 
-            print(x_position,"time:",ds2)
-            
-            
-            font3 = ImageFont.truetype("static/DejaVuSans.ttf", size=18)
-            
-            if string_number<6:
-                 y_position = lower_freq_lines[0]-60-2*string_number
-                 draw.text((x_position,y_position),symbol, fill=color, font=font)                      
-                 draw.text((x_position,lower_freq_lines[0]+50),str(ds), fill=(0,0,0), font=font3)     
-                 
-            else:
-                y_position = higher_freq_lines[0]-60-(2*(string_number-6))
-                draw.text((x_position,y_position),symbol, fill=color, font=font)             
-                draw.text((x_position,higher_freq_lines[0]+50),str(ds), fill=(0,0,0), font=font3) 
-                
-            x_position+=int((width-75)*(ds2/6)) 
-            
+        draw.text((35,y_position-50),str(estimated_beats_per_measure), fill=(0,0,0), font=font2)
 
+
+        
+        symbol = all_info[t][0]
+        note_duration_symbol = all_info[t][1]
+        note_duration = all_info[t][2]
+        string_number=all_info[t][3]
+        color=all_info[t][4]
+        spacing=0.01
+        time+=spacing
+        
+        x_position = x_position + int(spacing*(width-75)) 
+            
+        if string_number<6:
+            y_position = lower_freq_lines[0]-60-2*string_number
+            draw.text((x_position,y_position),symbol, fill=color, font=font)                      
+            draw.text((x_position,lower_freq_lines[0]+50),str(note_duration_symbol), fill=(0,0,0), font=font3)
+        else:
+            y_position = higher_freq_lines[0]-60-(2*(string_number-6))
+            draw.text((x_position,y_position),symbol, fill=color, font=font)             
+            draw.text((x_position,higher_freq_lines[0]+50),str(note_duration_symbol), fill=(0,0,0), font=font3)
+            
+        x_position+=int(note_duration*(width-75))
+        time+=note_duration
+        
+        #print(symbol,x_position,note_duration)
+        
+        time_range=[round(iii,2) for iii in np.arange(time-spacing-note_duration,time,0.01)]
+        
+        #print(time_range)
+        for k in range(len(time_range)):
+            
+            if round(time_range[k],2)%2==0:
+                
+                r=(time_range[k]-min(time_range))/(max(time_range)-min(time_range))
+                
+                print(r,r*width)
+                
+                draw.line([r*width, higher_freq_lines[0],r*width, higher_freq_lines[-1]], fill="black", width=2)
+                draw.line([r*width, higher_freq_lines[0],r*width, higher_freq_lines[-1]], fill="black", width=2)
+                    
+        if x_position>width:
+        
+            x_position=45
+            counter+=1
+            draw.line([width-5, higher_freq_lines[0],width-5, higher_freq_lines[-1]], fill="black", width=2)
+            draw.line([width-10, higher_freq_lines[0],width-10, higher_freq_lines[-1]], fill="black", width=2)
+            
+            draw.line([width-5, lower_freq_lines[0],width-5, lower_freq_lines[-1]], fill="black", width=2)
+            draw.line([width-10, lower_freq_lines[0],width-10, lower_freq_lines[-1]], fill="black", width=2)
             
                 
     # Step 4: Save the artwork
@@ -575,6 +592,4 @@ def process_audio_to_gif(audio_path,gif_path):
     # Example usage
     image_folder = 'music'  # Replace with your folder path
     output_filename = gif_path       # Desired output file name
-    #len(os.listdir(image_folder))
-    #create_gif(image_folder, output_filename,500)
-
+ 
