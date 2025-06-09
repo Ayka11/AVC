@@ -570,11 +570,11 @@ def process_audio_to_gif(audio_path,gif_path):
             
         if string_number<6:
             y_position = lower_freq_lines[0]-60-2*string_number
-            draw.text((x_position,y_position),str(note_duration_symbol), fill=color, font=font)                      
+            draw.text((x_position,y_position),symbol, fill=color, font=font)                      
             #draw.text((x_position,lower_freq_lines[0]+50),str(note_duration_symbol), fill=(0,0,0), font=font3)
         else:
             y_position = higher_freq_lines[0]-60-(2*(string_number-6))
-            draw.text((x_position,y_position),note_duration_symbol, fill=color, font=font)             
+            draw.text((x_position,y_position),symbol, fill=color, font=font)             
             #draw.text((x_position,higher_freq_lines[0]+50),str(note_duration_symbol), fill=(0,0,0), font=font3)
         
         
