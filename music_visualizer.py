@@ -46,7 +46,8 @@ def get_note_durations(notes, sr, hop_length, beats_per_measure=4, measure_durat
             return "sixty-forth"
     return [(note, map_duration(beat)) for (note, _), beat in zip(grouped, durations_in_beats)]
 
-#duration_symbol={'whole':1,'half':2,'quarter':3,'eighth':4,'sixteenth':5}
+duration_symbol={'whole':1,'half':2,'quarter':3,'eighth':4,'sixteenth':5,'thirty-second':6,'sixty-forth':7}
+'''
 duration_symbol = {
     'whole': '𝅝',
     'half': '𝅗𝅥',
@@ -56,6 +57,7 @@ duration_symbol = {
     'thirty-second':'𝅘𝅥𝅯',
     'sixty-forth':'𝅘𝅥𝅰'
 }
+'''
 note_durations_values = {
     "whole": 4,
     "half": 2,
@@ -571,11 +573,11 @@ def process_audio_to_gif(audio_path,gif_path):
         if string_number<6:
             y_position = lower_freq_lines[0]-60-2*string_number
             draw.text((x_position,y_position),symbol, fill=color, font=font)                      
-            #draw.text((x_position,lower_freq_lines[0]+50),str(note_duration_symbol), fill=(0,0,0), font=font3)
+            draw.text((x_position,lower_freq_lines[0]+50),str(note_duration_symbol), fill=(0,0,0), font=font3)
         else:
             y_position = higher_freq_lines[0]-60-(2*(string_number-6))
             draw.text((x_position,y_position),symbol, fill=color, font=font)             
-            #draw.text((x_position,higher_freq_lines[0]+50),str(note_duration_symbol), fill=(0,0,0), font=font3)
+            draw.text((x_position,higher_freq_lines[0]+50),str(note_duration_symbol), fill=(0,0,0), font=font3)
         
         
         x_position+=int(note_duration*wd)
