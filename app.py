@@ -36,9 +36,8 @@ import pandas as pd
 from pydub import AudioSegment
 from werkzeug.utils import secure_filename
 from dash import Dash, dcc, html
-import dash_core_components as dcc
-import dash_html_components as html
-from dash import Dash, dcc, html, callback, Input, Output
+
+from dash import Dash, dcc, html, Input, Output, callback
 import plotly.graph_objs as go
 import plotly.express as px
 global session
@@ -281,9 +280,9 @@ def string_to_color_pattern(input_string, palette, cell_width=200, cell_height=1
 def color_code_to_string(color_code, palette):
     return ''.join(color_to_char(tuple(color), palette) for color in color_code)
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+# @app.route('/')
+# def index():
+#     return render_template('index.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_audio():
@@ -1042,6 +1041,10 @@ def color_distance(c1, c2):
 def drawing2audio():
     return render_template('drawing_to_note.html')
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 @app.route('/submit', methods=['POST'])
 def submit():
     data = request.json
@@ -1127,6 +1130,11 @@ def serve_audio(filename):
     return send_from_directory(OUTPUT_DIR, filename)
 
 if __name__ == '__main__':
-     app.run(debug=True,host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
+    # For localhost / local development
+    app.run(
+        host='127.0.0.1',   # or 'localhost'
+        port=5000,          # you can change this to 8000, 3000, etc. if 5000 is busy
+        debug=True
+    )
 
 
