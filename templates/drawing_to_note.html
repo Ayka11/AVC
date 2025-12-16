@@ -226,7 +226,7 @@ and sonify your creativity. </p>
   </div>
 
   <br />
-  <audio id="player" controls></audio>
+<audio id="player" controls></audio>
 </div>
 
 <!-- Onboarding Modal -->
@@ -261,6 +261,7 @@ and sonify your creativity. </p>
 </div>
 	
 <script>
+  const player = document.getElementById('player');
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
   const colorPicker = document.getElementById('colorPicker');
